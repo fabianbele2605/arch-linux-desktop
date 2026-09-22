@@ -62,16 +62,16 @@ Esto no es una limitación oculta — es la razón exacta por la que la guía ma
 
 Con la VM `arch_linux` **apagada**, abrir `Configuración` en VirtualBox y revisar contra esta tabla:
 
-| Opción | Valor visto en esta VM | Ajuste recomendado para este curso |
+| Opción | Valor confirmado en esta VM | Estado |
 |---|---|---|
-| RAM | 4900 MB | OK — suficiente para un entorno gráfico completo (Fase 03) |
-| CPU | 4 núcleos | OK — de sobra para compilar paquetes AUR (Fase 08) |
-| Video Memory | 16 MB | **Subir al máximo permitido** (`Pantalla → Memoria de vídeo`) — 16 MB se queda corto para un compositor moderno |
-| Aceleración 3D | No se ve activada en el panel de Detalles | **Activar** (`Pantalla → Aceleración → Habilitar aceleración 3D`) — necesaria para GNOME/KDE/Wayland |
-| Controlador gráfico | VMSVGA | OK — es el recomendado por VirtualBox para guests Linux modernos |
-| Firmware (EFI) | No confirmado todavía | Revisar en `Sistema → Placa base → Habilitar EFI` — el Módulo 03 (UEFI/bootloaders) necesita saber si está en BIOS o UEFI |
-| Audio | ICH AC97, controlador de anfitrión: Predeterminado | OK para empezar — se revisa a fondo en la Fase 05 (PipeWire) |
-| Disco | `arch_linux.vdi` (50,45 GB) + `arch_linux_1.vdi` (10,85 GB) | OK — espacio de sobra para los snapshots de Btrfs (Fase 07), siempre que el filesystem lo soporte (se revisa en Fase 07) |
+| RAM | 4900 MB | ✅ OK — suficiente para un entorno gráfico completo (Fase 03) |
+| CPU | 4 núcleos | ✅ OK — de sobra para compilar paquetes AUR (Fase 08) |
+| Video Memory | 256 MB (máximo permitido) | ✅ Ya estaba al máximo |
+| Aceleración 3D | Tildado | ✅ Ya estaba activada |
+| Controlador gráfico | VMSVGA | ✅ OK — es el recomendado por VirtualBox para guests Linux modernos |
+| Firmware (EFI) | Checkbox "UEFI" **destildado** en `Sistema → Placa base` | **BIOS legacy confirmado**, no UEFI — el Módulo 03 (UEFI/bootloaders) se adapta para explicar GRUB en BIOS en vez de systemd-boot en UEFI |
+| Audio | ICH AC97, controlador de anfitrión: Predeterminado | ✅ OK para empezar — se revisa a fondo en la Fase 05 (PipeWire) |
+| Disco | `arch_linux.vdi` (50,45 GB) + `arch_linux_1.vdi` (10,85 GB) | ✅ OK — espacio de sobra para los snapshots de Btrfs (Fase 07) |
 
 ---
 
@@ -108,15 +108,18 @@ dmesg | grep -i bluetooth
 
 | Componente | Comando usado | Resultado observado | ¿Real o virtual? |
 |---|---|---|---|
-| CPU | `lscpu` | | |
-| GPU | `lspci \| grep -i vga` | | |
-| Red | `lspci \| grep -i ethernet` | | |
-| Disco | `lsblk` | | |
-| Audio | `lspci \| grep -i audio` | | |
-| Wi-Fi | `dmesg \| grep -i wifi` | | |
-| Bluetooth | `dmesg \| grep -i bluetooth` | | |
+| CPU | `lscpu` | AMD Ryzen 5 7530U with Radeon Graphics, 4 CPUs, hypervisor KVM (virtualization: full) | **Real** — el modelo exacto de la HP 255 G10, pasado casi directo al guest |
+| GPU | `lspci` | `VGA compatible controller: VMware SVGA II Adapter` | **Virtual** |
+| Red | `lspci` | `Ethernet controller: Intel Corporation 82540EM Gigabit Ethernet Controller` | **Virtual** (emulada) |
+| Disco | `lsblk` | `sda` 50.56G (`sda1`→`/boot`, `sda2`→`/`) + `sdb` 10.96G con LVM (`vg_datos-lv_pruebas`, `vg_datos-lv_cifrado`) + `zram0` 2.36G SWAP | **Virtual** como dispositivo, con LVM/LUKS real armado en el Módulo 11 del curso anterior |
+| Audio | `lspci` | `Multimedia audio controller: Intel Corporation 82801AA AC'97 Audio Controller` | **Virtual**, pero conectado al audio real del host |
+| USB | `lsusb` (tras `sudo pacman -S usbutils`) | Solo `Linux Foundation root hub` (x2) y `VirtualBox USB Tablet` | **Virtual** — sin dispositivos USB reales pasados por passthrough |
+| Wi-Fi | `sudo dmesg \| grep -i wifi` | Sin resultados | **No existe** en esta VM |
+| Bluetooth | `sudo dmesg \| grep -i bluetooth` | Sin resultados | **No existe** en esta VM |
 
-4. Guardar la tabla como evidencia inicial del curso — va a ser la referencia para comparar contra los módulos de GPU (06), Wi-Fi (18) y Bluetooth (19) más adelante.
+4. Tabla completada y guardada como evidencia inicial del curso — referencia directa para los módulos de GPU (06), Wi-Fi (18) y Bluetooth (19) más adelante.
+
+**Nota de diagnóstico:** la primera corrida de `dmesg` (sin `sudo`) falló con `read kernel buffer failed: Operation not permitted` — eso es un error de permisos, no evidencia de ausencia de hardware. Hubo que repetir con `sudo dmesg` para tener una lectura válida (vacía, confirmando la ausencia real de Wi-Fi/Bluetooth).
 
 ---
 
@@ -138,13 +141,13 @@ Usando `lspci -k` (que muestra qué driver del kernel está manejando cada dispo
 
 ## Checklist de cierre del módulo
 
-- [ ] Revisé la configuración de la VM `arch_linux` existente contra la tabla de la sección 4.
-- [ ] Subí la video memory y activé la aceleración 3D.
-- [ ] Confirmé si la VM está en BIOS o UEFI.
-- [ ] Corrí el inventario completo de hardware sobre la instalación real.
-- [ ] Completé la tabla de la sección 6 con resultados reales, no supuestos.
+- [x] Revisé la configuración de la VM `arch_linux` existente contra la tabla de la sección 4.
+- [x] Confirmé que video memory (256 MB) y aceleración 3D ya estaban al máximo/activada.
+- [x] Confirmé que la VM está en BIOS legacy (UEFI destildado), no UEFI.
+- [x] Corrí el inventario completo de hardware sobre la instalación real.
+- [x] Completé la tabla de la sección 6 con resultados reales, no supuestos.
 - [ ] Provoqué y diagnostiqué el fallo de arranque sin disco conectado, y volví a conectar el disco.
-- [ ] Puedo explicar, en mis propias palabras, qué de lo que vi es real (pasa del host) y qué es pura emulación de VirtualBox.
+- [x] Puedo explicar, en mis propias palabras, qué de lo que vi es real (pasa del host) y qué es pura emulación de VirtualBox.
 
 ---
 
@@ -169,6 +172,21 @@ No hay ISO live que bootear — la VM ya tiene Arch instalado, así que arranca 
 La VM está arriba y lista para iniciar sesión y correr el inventario de hardware.
 
 ![Prompt de login archebpf](evidencias/04-prompt-login-archebpf.png)
+
+**05 — `lscpu`: CPU real, no virtual**
+`AMD Ryzen 5 7530U with Radeon Graphics`, 4 CPUs, `Hypervisor vendor: KVM`, `Virtualization type: full` — el modelo exacto de la HP 255 G10 pasado casi directo al guest.
+
+![lscpu CPU real AMD Ryzen](evidencias/05-lscpu-cpu-real-amd-ryzen.png)
+
+**06 — `lspci` + `lsblk`: GPU, red y audio virtuales**
+`VMware SVGA II Adapter` (GPU), `Intel 82540EM Gigabit Ethernet Controller` (red), `Intel 82801AA AC'97 Audio Controller` (audio) — los tres emulados por VirtualBox. `lsblk` muestra `sda`/`sdb` con el LVM y volumen cifrado armados en el Módulo 11 del curso anterior.
+
+![lspci lsblk GPU red audio virtuales](evidencias/06-lspci-lsblk-gpu-red-audio-virtuales.png)
+
+**07 — `lsusb` (tras instalar `usbutils`) y `dmesg` de Wi-Fi/Bluetooth vacíos**
+Solo hubs USB virtuales y el `VirtualBox USB Tablet`. `sudo dmesg | grep -i wifi` y `sudo dmesg | grep -i bluetooth` no devuelven nada — confirmación final de que no existe ese hardware en esta VM.
+
+![lsusb y dmesg wifi bluetooth vacío](evidencias/07-lsusb-y-dmesg-wifi-bluetooth-vacio.png)
 
 ---
 
