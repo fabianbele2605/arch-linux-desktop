@@ -124,7 +124,95 @@ archinstall --config archivo_que_no_existe.json
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Mirror 404 al instalar `archinstall`**
+Mismo problema conocido de mirrors desactualizados de `geo.mirror.pkgbuild.com`.
+
+![Mirror 404](evidencias/01-mirror-404-instalando-archinstall.png)
+
+**02 — Reintento exitoso**
+`pacman -Syy` + reinstalación completa, con regeneración de `initramfs`.
+
+![Retry exitoso](evidencias/02-retry-exitoso-mkinitcpio.png)
+
+**03 — `archinstall --version`/`--help`: el flag `--dry-run`**
+`archinstall 4.4` instalado. El `--help` revela `--dry-run`: genera configuración y sale sin instalar — la protección clave de este módulo.
+
+![version help dry-run](evidencias/03-version-help-dry-run-flag.png)
+
+**04 — Menú principal (inglés)**
+Primera vista del TUI de `archinstall` corrido con `--dry-run`.
+
+![Menú principal inglés](evidencias/04-menu-principal-ingles.png)
+
+**05 — Locale `es_CO` seleccionado**
+Hasta el propio menú de `archinstall` cambió a español tras elegir el idioma.
+
+![Locale es_CO](evidencias/05-locale-es-co-seleccionado.png)
+
+**06 — Configuración de disco: 3 opciones**
+Diseño predeterminado, partición manual, o configuración premontada — comparado con la partición manual real hecha en el curso anterior.
+
+![Configuración de disco](evidencias/06-configuracion-de-disco-tres-opciones.png)
+
+**07 — Selección de discos: partición real detectada**
+`archinstall` reconoce `sda1` (fat32, boot, 1GiB) y `sda2` (ext4, 49.5GiB) — coincide exactamente con la auditoría del Módulo 01.
+
+![Selección discos partición real](evidencias/07-seleccion-discos-particion-real-detectada.png)
+
+**08 — Pantalla de particionamiento, explorada sin confirmar**
+Un paso más adentro del flujo destructivo, protegido por `--dry-run`, sin llegar a seleccionar nada.
+
+![Pantalla particionamiento](evidencias/08-pantalla-particionamiento-sin-confirmar.png)
+
+**09 — Gestor de arranque: Grub (+ Plymouth)**
+`Grub` ya preseleccionado por defecto, coincidiendo con la instalación real. `Plymouth` (splash gráfico) es una opción que la instalación manual del curso anterior no configuró.
+
+![Gestor de arranque Grub](evidencias/09-gestor-arranque-grub-plymouth.png)
+
+**10 — Guardar configuración: preview del JSON**
+Vista previa completa del `user_configuration.json` antes de guardar — bootloader, hostname, locale, swap, todo consistente con lo esperado.
+
+![Guardar configuración preview](evidencias/10-guardar-configuracion-preview-json.png)
+
+**11 — Directorio inválido (carpeta de proyectos)**
+Primer intento de guardar en una carpeta que no existía.
+
+![Directorio inválido proyectos](evidencias/11-directorio-invalido-proyectos.png)
+
+**12 — Directorio inválido (subcarpeta de /tmp)**
+Segundo intento, misma causa: el subdirectorio no existe, `archinstall` no lo crea automáticamente.
+
+![Directorio inválido subcarpeta tmp](evidencias/12-directorio-invalido-tmp-subcarpeta.png)
+
+**13 — Confirmar guardar en `/tmp`**
+Usando el directorio raíz `/tmp` (que sí existe), confirmado.
+
+![Confirmar guardar en tmp](evidencias/13-confirmar-guardar-en-tmp.png)
+
+**14 — No encriptar credenciales**
+Decisión razonable para este ejercicio de exploración, sin datos sensibles reales.
+
+![No encriptar credenciales](evidencias/14-no-encriptar-credenciales.png)
+
+**15 — Menú principal final, antes de Abortar**
+Configuración guardada, listo para salir sin instalar.
+
+![Menú principal final](evidencias/15-menu-principal-final-antes-abortar.png)
+
+**16 — Programa cerrado sin instalar nada**
+`archinstall --dry-run` terminó limpio, disco intacto.
+
+![Programa cerrado sin instalar](evidencias/16-programa-cerrado-sin-instalar.png)
+
+**17 — Error real de permisos: `Permission denied`**
+El JSON fue creado por `root` (vía `sudo`); el usuario normal no podía leerlo — mismo principio del Módulo 04 del curso anterior.
+
+![Permission denied](evidencias/17-permission-denied-leyendo-json.png)
+
+**18 — `sudo cat` exitoso: JSON final confirmado**
+Configuración completa leída y comparada campo por campo contra la instalación real.
+
+![sudo cat exitoso JSON final](evidencias/18-sudo-cat-exitoso-json-final.png)
 
 ---
 
