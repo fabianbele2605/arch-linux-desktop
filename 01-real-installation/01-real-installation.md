@@ -137,7 +137,45 @@ Sin ejecutar nada todavía: basándote en la tabla de la sección 6, predecí qu
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Auditoría completa: `fdisk`, `lsblk`, `df -hT`, `fstab`, `blkid`**
+`parted -l` no estaba instalado (falló primero), pero `fdisk -l` ya confirmó `Disklabel type: dos` (MBR). El resto de los comandos completaron la tabla: `sda1` (vfat, `/boot`), `sda2` (ext4, `/`), volúmenes LVM en `sdb` sin entrada en `fstab`, y `zram0` como swap.
+
+![Auditoría completa](evidencias/01-auditoria-completa-fdisk-lsblk-blkid-fstab.png)
+
+**02 — `parted` instalado: MBR confirmado, `sdb` sin tabla de particiones**
+`sda` confirmado `msdos` con las 2 particiones esperadas. `sdb` da `Error: unrecognised disk label` — correcto y esperado, porque se usó como PV de LVM directamente sobre el disco entero, sin particionar.
+
+![parted instalado, msdos confirmado](evidencias/02-parted-instalado-msdos-sdb-sin-tabla.png)
+
+**03 — Break & Fix: UUID inválido en `/boot`, `mount -a` falla**
+`mount: /boot: can't find UUID=4158-EF04`, con el bonus real de un hint de systemd sobre `daemon-reload` — conexión directa con el Módulo 09 del curso anterior.
+
+![Break Fix UUID inválido](evidencias/03-breakfix-fstab-uuid-invalido-mount-falla.png)
+
+**04 — `fstab` restaurado, `mount -a` exitoso**
+Vuelta al estado real sin errores.
+
+![fstab restaurado](evidencias/04-fstab-restaurado-mount-exitoso.png)
+
+**05 — Desconectando `sdb` desde VirtualBox**
+"Remove Attachment" sobre `arch_linux_1.vdi`, sin borrar el archivo — mismo mecanismo que con `sda` en el Módulo 00.
+
+![Desconectando sdb](evidencias/05-virtualbox-desconectando-sdb.png)
+
+**06 — GRUB arranca normal sin `sdb`**
+El menú de arranque aparece sin ningún problema — confirma que `sdb` no es necesario para el proceso de boot.
+
+![GRUB arranca normal](evidencias/06-grub-arranca-normal-sin-sdb.png)
+
+**07 — Arranque exitoso: `fsck` limpio y login**
+`/dev/sda2: clean` seguido del prompt de login — arranque completo sin errores visibles, confirmando la predicción (b)/(c) evaluada en el reto.
+
+![Boot exitoso fsck login](evidencias/07-boot-exitoso-fsck-login.png)
+
+**08 — Confirmación final: sin errores de LVM, `sdb` ausente**
+`dmesg`/`journalctl` no muestran ningún error relacionado a `vg_datos` — solo mensajes genéricos del servicio de monitoreo LVM. `lsblk` confirma que `sdb` y sus volúmenes simplemente no aparecen, sin que eso genere ningún fallo.
+
+![Sin errores LVM, sdb ausente](evidencias/08-sin-errores-lvm-sdb-ausente-confirmado.png)
 
 ---
 
