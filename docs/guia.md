@@ -176,9 +176,9 @@ No se volverán a enseñar desde cero. Se utilizarán como conocimientos previos
 
 ### Máquina virtual
 
-La práctica se realiza en una VM de VirtualBox nueva, separada de la VM del curso anterior (esa quedó como el "servidor" — esta es el "escritorio").
+La práctica se realiza reutilizando la **misma VM `arch_linux`** del curso anterior (no se crea una VM nueva separada) — ya tiene Arch instalado y configurado desde el Módulo 06 del primer curso, así que este curso arranca directamente desde ahí en vez de repetir una instalación desde cero. Esto significa que la Fase 01 (instalación) se estudia igual en profundidad, pero validando/ajustando la instalación existente en vez de partir de una ISO en blanco — ver el Módulo 01 para el detalle de qué se reutiliza y qué se revisa.
 
-**Configuración recomendada de la VM:**
+**Configuración recomendada de la VM (revisar y ajustar la existente):**
 
 - Tipo: Arch Linux (64-bit)
 - RAM: mínimo 4 GB, ideal 8 GB (un entorno gráfico completo con GNOME/KDE pesa más que una terminal)

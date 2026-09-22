@@ -1,0 +1,11 @@
+# Archivos temporales de edición
+*.swp
+*.bak
+*~
+
+# Sistema
+.DS_Store
+Thumbs.db
+
+# Carpeta de imagenes
+/img
