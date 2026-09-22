@@ -132,7 +132,58 @@ cat /sys/firmware/efi/efivars/algo_que_no_existe
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01-04 — Creación de la VM temporal `uefi-explorer`**
+Nombre, detección automática de "ArchLinux" como distribución, y el checkbox **"Use EFI"** marcado desde la creación — la VM nace con UEFI habilitado.
+
+![Nueva VM](evidencias/01-nueva-vm-nombre-vacio.png)
+![Nombre y ArchLinux detectado](evidencias/02-nombre-uefi-explorer-archlinux-detectado.png)
+![Use EFI marcado](evidencias/03-use-efi-marcado.png)
+![VM creada, EFI habilitado](evidencias/04-vm-creada-efi-habilitado.png)
+
+**05 — Nota real: "Boot Device Order (BIOS only)"**
+Con EFI habilitado, esa lista de orden de arranque tradicional queda ignorada — UEFI usa sus propias entradas de NVRAM.
+
+![Boot device order BIOS only](evidencias/05-boot-device-order-bios-only-nota.png)
+
+**06-11 — Adjuntar el ISO de Arch**
+Navegación por Almacenamiento, selector de archivo (con detección del ISO corrupto de 57MB de un intento fallido anterior, descartado a favor del real de 1,6GB), y confirmación final.
+
+![Almacenamiento SATA](evidencias/06-almacenamiento-sata-vdi.png)
+![Almacenamiento IDE vacío](evidencias/07-almacenamiento-ide-vacio.png)
+![Menú elegir archivo](evidencias/08-menu-elegir-archivo-disco.png)
+![Selector ISO real vs corrupto](evidencias/09-selector-iso-real-vs-corrupto.png)
+![ISO adjuntado confirmado](evidencias/10-iso-adjuntado-confirmado.png)
+![VM lista con ISO adjuntado](evidencias/11-vm-lista-con-iso-adjuntado.png)
+
+**12 — Menú de arranque: "UEFI" explícito + EFI Shell**
+El propio menú de GRUB dice `(x86_64, UEFI)`, y aparecen opciones exclusivas de UEFI (`EFI Shell`, `Reboot Into Firmware Interface`) que no existen en modo BIOS.
+
+![Menú boot UEFI EFI Shell](evidencias/12-menu-boot-uefi-efi-shell.png)
+
+**13 — Log de arranque de systemd**
+El entorno live completando su boot normal.
+
+![systemd boot log](evidencias/13-systemd-boot-log.png)
+
+**14 — Login y exploración UEFI completa**
+`ls /sys/firmware/efi` (existe, a diferencia del sistema real), `efibootmgr -v` (entradas reales de NVRAM: `UiApp`, `UEFI VBOX CD-ROM`, `UEFI VBOX HARDDISK`), y `fw_platform_size` = 64.
+
+![Login y exploración efi completa](evidencias/14-login-y-exploracion-efi-completa.png)
+
+**15 — `mount | grep efi`: `efivarfs` confirmado**
+El filesystem especial que expone las variables UEFI como archivos.
+
+![mount grep efi efivarfs](evidencias/15-mount-grep-efi-efivarfs.png)
+
+**16 — Error intencional: variable UEFI inexistente**
+`No such file or directory` — confirma que no cualquier nombre funciona dentro de `efivars/`.
+
+![Error variable inexistente](evidencias/16-cat-error-variable-inexistente.png)
+
+**17 — De vuelta en el sistema real: `sbctl` confirma "not booted with UEFI"**
+Cierre del módulo con la comparación completa: UEFI real (VM temporal) vs. BIOS real (sistema principal). Bonus: se ve el hook automático de `sbctl` integrado en `mkinitcpio`, detectando que no hay claves de Secure Boot generadas todavía.
+
+![sbctl instalado sistema real no UEFI](evidencias/17-sbctl-instalado-sistema-real-no-uefi.png)
 
 ---
 
