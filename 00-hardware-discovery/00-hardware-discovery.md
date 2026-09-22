@@ -146,7 +146,7 @@ Usando `lspci -k` (que muestra qué driver del kernel está manejando cada dispo
 - [x] Confirmé que la VM está en BIOS legacy (UEFI destildado), no UEFI.
 - [x] Corrí el inventario completo de hardware sobre la instalación real.
 - [x] Completé la tabla de la sección 6 con resultados reales, no supuestos.
-- [ ] Provoqué y diagnostiqué el fallo de arranque sin disco conectado, y volví a conectar el disco.
+- [x] Provoqué y diagnostiqué el fallo de arranque sin disco conectado, y volví a conectar el disco.
 - [x] Puedo explicar, en mis propias palabras, qué de lo que vi es real (pasa del host) y qué es pura emulación de VirtualBox.
 
 ---
@@ -154,34 +154,59 @@ Usando `lspci -k` (que muestra qué driver del kernel está manejando cada dispo
 ## Evidencias
 
 **01 — VM `arch_linux` existente: detalles de configuración**
-Memoria 4900 MB, 4 procesadores, video memory 16 MB (a subir), controlador gráfico VMSVGA, audio ICH AC97, disco `arch_linux.vdi` (50,45 GB) + `arch_linux_1.vdi` (10,85 GB) — la misma VM del curso anterior, reutilizada como base de este.
+Memoria 4900 MB, 4 procesadores, controlador gráfico VMSVGA, audio ICH AC97, disco `arch_linux.vdi` (50,45 GB) + `arch_linux_1.vdi` (10,85 GB) — la misma VM del curso anterior, reutilizada como base de este.
 
 ![VM arch_linux detalles de configuración](evidencias/01-vm-arch-linux-detalles-configuracion.png)
 
-**02 — GRUB: arrancando la instalación existente**
+**02 — Pantalla: Video Memory 256 MB + 3D Acceleration activada**
+Prueba directa de que ambos ajustes de la tabla de la sección 4 ya estaban al máximo/activados, sin necesidad de tocar nada.
+
+![VM Pantalla 256MB 3D Acceleration](evidencias/02-vm-pantalla-256mb-3d-acceleration.png)
+
+**03 — Sistema → Placa base: UEFI destildado**
+Confirmación directa de que esta VM corre en BIOS legacy, no UEFI — el dato que el Módulo 03 (UEFI/bootloaders) necesita.
+
+![VM Sistema UEFI destildado BIOS](evidencias/03-vm-sistema-uefi-destildado-bios.png)
+
+**04 — GRUB: arrancando la instalación existente**
 No hay ISO live que bootear — la VM ya tiene Arch instalado, así que arranca directo por GRUB a la instalación del curso anterior.
 
-![GRUB arrancando instalación existente](evidencias/02-grub-arrancando-instalacion-existente.png)
+![GRUB arrancando instalación existente](evidencias/04-grub-arrancando-instalacion-existente.png)
 
-**03 — Prompt de login: `archebpf login:`**
+**05 — Prompt de login: `archebpf login:`**
 La VM está arriba y lista para iniciar sesión y correr el inventario de hardware.
 
-![Prompt de login archebpf](evidencias/03-prompt-login-archebpf.png)
+![Prompt de login archebpf](evidencias/05-prompt-login-archebpf.png)
 
-**04 — `lscpu`: CPU real, no virtual**
+**06 — `lscpu`: CPU real, no virtual**
 `AMD Ryzen 5 7530U with Radeon Graphics`, 4 CPUs, `Hypervisor vendor: KVM`, `Virtualization type: full` — el modelo exacto de la HP 255 G10 pasado casi directo al guest.
 
-![lscpu CPU real AMD Ryzen](evidencias/04-lscpu-cpu-real-amd-ryzen.png)
+![lscpu CPU real AMD Ryzen](evidencias/06-lscpu-cpu-real-amd-ryzen.png)
 
-**05 — `lspci` + `lsblk`: GPU, red y audio virtuales**
+**07 — `lspci` + `lsblk`: GPU, red y audio virtuales**
 `VMware SVGA II Adapter` (GPU), `Intel 82540EM Gigabit Ethernet Controller` (red), `Intel 82801AA AC'97 Audio Controller` (audio) — los tres emulados por VirtualBox. `lsblk` muestra `sda`/`sdb` con el LVM y volumen cifrado armados en el Módulo 11 del curso anterior.
 
-![lspci lsblk GPU red audio virtuales](evidencias/05-lspci-lsblk-gpu-red-audio-virtuales.png)
+![lspci lsblk GPU red audio virtuales](evidencias/07-lspci-lsblk-gpu-red-audio-virtuales.png)
 
-**06 — `lsusb` (tras instalar `usbutils`) y `dmesg` de Wi-Fi/Bluetooth vacíos**
+**08 — `lsusb` (tras instalar `usbutils`) y `dmesg` de Wi-Fi/Bluetooth vacíos**
 Solo hubs USB virtuales y el `VirtualBox USB Tablet`. `sudo dmesg | grep -i wifi` y `sudo dmesg | grep -i bluetooth` no devuelven nada — confirmación final de que no existe ese hardware en esta VM.
 
-![lsusb y dmesg wifi bluetooth vacío](evidencias/06-lsusb-y-dmesg-wifi-bluetooth-vacio.png)
+![lsusb y dmesg wifi bluetooth vacío](evidencias/08-lsusb-y-dmesg-wifi-bluetooth-vacio.png)
+
+**09 — Desconectando `arch_linux.vdi` (`Remove attachment`)**
+La acción que provoca el error intencional: se quita el disco principal del controlador SATA sin borrarlo.
+
+![Desconectando disco Remove attachment](evidencias/09-desconectando-disco-remove-attachment.png)
+
+**10 — Error: `No bootable medium found!`**
+Con el disco desconectado, el firmware no encuentra nada para arrancar — confirma la misma regla del Módulo 30 del curso anterior.
+
+![Error no bootable medium disco desconectado](evidencias/10-error-no-bootable-medium-disco-desconectado.png)
+
+**11 — Recuperado: boot normal tras reconectar el disco**
+Se vuelve a agregar `arch_linux.vdi` al controlador SATA y la VM arranca normal de nuevo, hasta el prompt de login.
+
+![Recuperado boot normal tras reconectar disco](evidencias/11-recuperado-boot-normal-tras-reconectar-disco.png)
 
 ---
 
