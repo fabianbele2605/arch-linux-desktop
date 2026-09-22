@@ -163,30 +163,25 @@ No hay ISO live que bootear — la VM ya tiene Arch instalado, así que arranca 
 
 ![GRUB arrancando instalación existente](evidencias/02-grub-arrancando-instalacion-existente.png)
 
-**03 — Verificación del filesystem al arrancar**
-`/dev/sda2: recovering journal` seguido de `clean` — journal recovery normal de un apagado previo, sin errores de filesystem.
-
-![Verificación del filesystem al arrancar](evidencias/03-verificacion-filesystem-arranque.png)
-
-**04 — Prompt de login: `archebpf login:`**
+**03 — Prompt de login: `archebpf login:`**
 La VM está arriba y lista para iniciar sesión y correr el inventario de hardware.
 
-![Prompt de login archebpf](evidencias/04-prompt-login-archebpf.png)
+![Prompt de login archebpf](evidencias/03-prompt-login-archebpf.png)
 
-**05 — `lscpu`: CPU real, no virtual**
+**04 — `lscpu`: CPU real, no virtual**
 `AMD Ryzen 5 7530U with Radeon Graphics`, 4 CPUs, `Hypervisor vendor: KVM`, `Virtualization type: full` — el modelo exacto de la HP 255 G10 pasado casi directo al guest.
 
-![lscpu CPU real AMD Ryzen](evidencias/05-lscpu-cpu-real-amd-ryzen.png)
+![lscpu CPU real AMD Ryzen](evidencias/04-lscpu-cpu-real-amd-ryzen.png)
 
-**06 — `lspci` + `lsblk`: GPU, red y audio virtuales**
+**05 — `lspci` + `lsblk`: GPU, red y audio virtuales**
 `VMware SVGA II Adapter` (GPU), `Intel 82540EM Gigabit Ethernet Controller` (red), `Intel 82801AA AC'97 Audio Controller` (audio) — los tres emulados por VirtualBox. `lsblk` muestra `sda`/`sdb` con el LVM y volumen cifrado armados en el Módulo 11 del curso anterior.
 
-![lspci lsblk GPU red audio virtuales](evidencias/06-lspci-lsblk-gpu-red-audio-virtuales.png)
+![lspci lsblk GPU red audio virtuales](evidencias/05-lspci-lsblk-gpu-red-audio-virtuales.png)
 
-**07 — `lsusb` (tras instalar `usbutils`) y `dmesg` de Wi-Fi/Bluetooth vacíos**
+**06 — `lsusb` (tras instalar `usbutils`) y `dmesg` de Wi-Fi/Bluetooth vacíos**
 Solo hubs USB virtuales y el `VirtualBox USB Tablet`. `sudo dmesg | grep -i wifi` y `sudo dmesg | grep -i bluetooth` no devuelven nada — confirmación final de que no existe ese hardware en esta VM.
 
-![lsusb y dmesg wifi bluetooth vacío](evidencias/07-lsusb-y-dmesg-wifi-bluetooth-vacio.png)
+![lsusb y dmesg wifi bluetooth vacío](evidencias/06-lsusb-y-dmesg-wifi-bluetooth-vacio.png)
 
 ---
 
