@@ -25,7 +25,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 
 ### Fase 01 — Instalación real (en VM)
 - [x] [01 — Arch Linux Installation](01-real-installation/01-real-installation.md)
-- [ ] [02 — Manual Installation vs Archinstall](02-archinstall-vs-manual/02-archinstall-vs-manual.md)
+- [x] [02 — Manual Installation vs Archinstall](02-archinstall-vs-manual/02-archinstall-vs-manual.md)
 - [ ] [03 — UEFI, Bootloaders & Secure Boot](03-uefi-bootloaders/03-uefi-bootloaders.md)
 
 ### Fase 02 — Gráficos
