@@ -50,7 +50,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 - [x] [16 — Bluetooth Audio](16-bluetooth-audio/16-bluetooth-audio.md)
 
 ### Fase 06 — Desktop Networking
-- [ ] [17 — NetworkManager](17-networkmanager/17-networkmanager.md)
+- [x] [17 — NetworkManager](17-networkmanager/17-networkmanager.md)
 - [ ] [18 — Wi-Fi (adaptado)](18-wifi/18-wifi.md)
 - [ ] [19 — Bluetooth (opcional)](19-bluetooth/19-bluetooth.md)
 - [ ] [20 — Printing & CUPS](20-cups-printing/20-cups-printing.md)
