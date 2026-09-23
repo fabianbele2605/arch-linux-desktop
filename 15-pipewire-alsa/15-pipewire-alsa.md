@@ -120,18 +120,62 @@ pw-link -i    # listar puertos de entrada (input) disponibles
 
 ## Checklist de cierre del módulo
 
-- [ ] Entiendo el modelo de grafo de PipeWire: nodos, puertos, enlaces.
-- [ ] Usé `pw-cli`, `pw-top` y `pw-link` para inspeccionar el grafo en tiempo real.
-- [ ] Entiendo la distinción mecanismo (PipeWire) vs. política (WirePlumber).
-- [ ] Exploré la configuración real de WirePlumber y su sistema de capas (defaults + overrides de usuario).
-- [ ] Entiendo qué es `~/.asoundrc` y por qué su ausencia es normal en un sistema PipeWire moderno.
-- [ ] Provoqué y diagnostiqué un error de `pw-link` con puertos inexistentes.
+- [x] Entiendo el modelo de grafo de PipeWire: nodos, puertos, enlaces.
+- [x] Usé `pw-cli`, `pw-top` y `pw-link` para inspeccionar el grafo en tiempo real.
+- [x] Entiendo la distinción mecanismo (PipeWire) vs. política (WirePlumber).
+- [x] Exploré la configuración real de WirePlumber y su sistema de capas (defaults + overrides de usuario).
+- [x] Entiendo qué es `~/.asoundrc` y por qué su ausencia es normal en un sistema PipeWire moderno.
+- [x] Provoqué y diagnostiqué un error de `pw-link` con puertos inexistentes.
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — `pw-cli ls Node`: solo los drivers internos, antes de que la sesión de audio despierte**
+Únicamente `Dummy-Driver` y `Freewheel-Driver` (nodos de sincronización interna de PipeWire) — todavía sin dispositivos de audio activos en el grafo.
+
+![pw-cli ls node solo drivers internos](evidencias/01-pw-cli-ls-node-solo-drivers-internos.png)
+
+**02 — `pw-top` con 6 nodos, mientras `speaker-test` está sonando**
+Con audio activo aparecen `Midi-Bridge`, `bluez_midi.server`, y los nodos reales del dispositivo (`alsa_output...`, `alsa_input...`) — confirmando que el grafo crece según qué esté en uso.
+
+![pw-top seis nodos con speaker-test sonando](evidencias/02-pw-top-seis-nodos-con-speaker-test-sonando.png)
+
+**03-04 — Hallazgo real: `pw-link -l` vacío, dos veces, con `speaker-test` corriendo**
+Primer intento vacío porque `speaker-test` ya había terminado al momento de consultar (los enlaces de PipeWire son efímeros). Repetido con `speaker-test -l 20` activo — seguía vacío, señal de que el problema no era timing sino que el proceso no se registraba como cliente de PipeWire en absoluto.
+
+![pw-link l vacio speaker-test ya termino](evidencias/03-pw-link-l-vacio-speaker-test-ya-termino.png)
+![pw-link l vacio de nuevo con l 20 activo](evidencias/04-pw-link-l-vacio-de-nuevo-con-l-20-activo.png)
+
+**05 — Diagnóstico: sin cliente en el grafo, y un typo en el camino**
+`pw-cli ls Node` filtrado no muestra nodo de `speaker-test`; `pw-link -o` solo lista puertos de monitor/captura del dispositivo, ningún puerto de reproducción activo. De paso, `pactl list short clientes` (typo en español) confirmó el uso correcto del comando en inglés.
+
+![pw-link o sin cliente pactl clientes typo](evidencias/05-pw-link-o-sin-cliente-pactl-clientes-typo.png)
+
+**06 — `pactl list short clients` corregido: `speaker-test` no aparece como cliente de PipeWire**
+Solo `wireplumber`, `pipewire` y `pactl` — confirmación adicional de que `speaker-test` por defecto usa el dispositivo ALSA (`hw:0`) directo, bypaseando PipeWire.
+
+![pactl clients corregido sin speaker-test](evidencias/06-pactl-clients-corregido-sin-speaker-test.png)
+
+**07 — `speaker-test -D pipewire`: ahora sí, cliente registrado**
+Forzando el dispositivo `pipewire` explícitamente, `pactl list short clients` muestra la nueva línea `72 PipeWire speaker-test` — la teoría de la sección 5, confirmada con evidencia concreta.
+
+![speaker-test d pipewire cliente registrado](evidencias/07-speaker-test-d-pipewire-cliente-registrado.png)
+
+**08 — `pw-link -l`: el enlace real, puerto a puerto**
+`alsa_playback.speaker-test:output_FL/FR` conectado a `alsa_output...analog-stereo:playback_FL/FR` — el grafo de nodos/puertos/enlaces de la sección 1, ahora visto en vivo y completo.
+
+![pw-link l enlace real confirmado](evidencias/08-pw-link-l-enlace-real-confirmado.png)
+
+**09 — Configuración de WirePlumber explorada, sin `~/.asoundrc`**
+`find` sobre `/usr/share/wireplumber` encuentra 4 archivos relacionados a ALSA, incluyendo un `alsa-vm.conf` notable. La ausencia de `~/.asoundrc` confirma que todo el audio pasa por PipeWire, sin configuración ALSA de bajo nivel compitiendo.
+
+![wireplumber alsa files sin asoundrc](evidencias/09-wireplumber-alsa-files-sin-asoundrc.png)
+
+**10 — `alsa-vm.conf`: WirePlumber con reglas explícitas para VMs, y el error intencional confirmado**
+El archivo detecta `cpu.vm.name` (`oracle` = VirtualBox, `vmware` = VMware) y les aplica más "headroom" de buffer (`8192` vs. `2048` genérico) para evitar cortes de audio — mismo patrón de adaptación inteligente al entorno virtualizado que ya viste con `TLP` en el Módulo 13. El `pw-link` con nombres inventados falló con `No such file or directory`, tal como se esperaba.
+
+![alsa vm conf y error intencional pw-link](evidencias/10-alsa-vm-conf-y-error-intencional-pw-link.png)
 
 ---
 
