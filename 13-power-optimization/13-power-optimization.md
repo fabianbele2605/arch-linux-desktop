@@ -110,7 +110,15 @@ sudo cpupower frequency-set -g governor_que_no_existe
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — `cpupower`: sin driver `cpufreq` — limitación real de VM confirmada**
+`no or unknown cpufreq driver is active on this CPU`, `available cpufreq governors: Not Available`. Los intentos de cambiar a `performance`/`powersave` fallaron consistentemente — VirtualBox no expone control de frecuencia de CPU al huésped.
+
+![cpupower sin driver cpufreq limitacion vm](evidencias/01-cpupower-sin-driver-cpufreq-limitacion-vm.png)
+
+**02 — `TLP` instalado, detecta correctamente que corre en VirtualBox**
+`System = innotek GmbH VirtualBox`, `TLP profile = performance/AC`, `Power source = AC` — software bien diseñado, adaptándose con criterio al entorno virtualizado en vez de fallar.
+
+![TLP instalado detecta virtualbox](evidencias/02-tlp-instalado-detecta-virtualbox.png)
 
 ---
 
