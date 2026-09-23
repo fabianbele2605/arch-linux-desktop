@@ -47,7 +47,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 ### Fase 05 — Audio
 - [x] [14 — Audio Architecture](14-audio-architecture/14-audio-architecture.md)
 - [x] [15 — PipeWire, WirePlumber & ALSA](15-pipewire-alsa/15-pipewire-alsa.md)
-- [ ] [16 — Bluetooth Audio](16-bluetooth-audio/16-bluetooth-audio.md)
+- [x] [16 — Bluetooth Audio](16-bluetooth-audio/16-bluetooth-audio.md)
 
 ### Fase 06 — Desktop Networking
 - [ ] [17 — NetworkManager](17-networkmanager/17-networkmanager.md)
