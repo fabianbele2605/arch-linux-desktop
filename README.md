@@ -34,7 +34,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 - [x] [06 — GPU Drivers, Mesa & Vulkan](06-gpu-drivers/06-gpu-drivers.md)
 
 ### Fase 03 — Desktop Environments
-- [ ] [07 — Desktop Architecture](07-desktop-architecture/07-desktop-architecture.md)
+- [x] [07 — Desktop Architecture](07-desktop-architecture/07-desktop-architecture.md)
 - [ ] [08 — GNOME](08-gnome/08-gnome.md)
 - [ ] [09 — KDE Plasma](09-kde-plasma/09-kde-plasma.md)
 - [ ] [10 — Window Managers & Compositors](10-window-managers/10-window-managers.md)
