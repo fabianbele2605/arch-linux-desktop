@@ -118,7 +118,28 @@ sudo rmmod vmwgfx
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Hardware detectado: `vmwgfx` + DRM**
+`lspci -k` confirma `VMware SVGA II Adapter` con `Kernel driver in use: vmwgfx`; `lsmod` muestra los módulos DRM cargados (`vmwgfx`, `drm_ttm_helper`, `ttm`); `/dev/dri/` expone `card0` y `renderD128`.
+
+![Hardware detectado vmwgfx DRM](evidencias/01-hardware-detectado-vmwgfx-drm.png)
+
+**02-04 — Mirrors inestables (patrón conocido)**
+Varios intentos de instalar `mesa-utils` fallaron por timeouts de red en distintos archivos, y `glxinfo` no estaba disponible todavía.
+
+![Mirror timeout primer intento](evidencias/02-mirror-timeout-primer-intento.png)
+![glxinfo command not found](evidencias/03-glxinfo-command-not-found.png)
+![Segundo intento mirror timeout](evidencias/04-segundo-intento-mirror-timeout.png)
+
+**05-06 — Solución: `reflector` + instalación exitosa**
+Tras refrescar la lista de mirrors, la sincronización y la instalación de `mesa-utils` (36 paquetes) completaron sin errores.
+
+![Reflector y syy completado](evidencias/05-reflector-y-syy-completado.png)
+![mesa-utils instalado exitoso](evidencias/06-mesa-utils-instalado-exitoso.png)
+
+**07 — `glxinfo`: "unable to open display"**
+Resultado real y esperado: sin un servidor gráfico (Xorg/Wayland) corriendo todavía, no hay "display" al cual consultar — el puente perfecto hacia el Módulo 05.
+
+![glxinfo unable to open display](evidencias/07-glxinfo-unable-to-open-display.png)
 
 ---
 
