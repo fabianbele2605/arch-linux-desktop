@@ -118,19 +118,44 @@ nmcli connection up "conexion-que-no-existe"
 
 ## Checklist de cierre del módulo
 
-- [ ] Entiendo por qué el escritorio necesita NetworkManager sobre lo que ya sabías del curso anterior.
-- [ ] Entiendo que NetworkManager orquesta `wpa_supplicant`/`iwd`, no los reemplaza.
-- [ ] Instalé NetworkManager y resolví (o documenté) cualquier conflicto con `systemd-networkd`.
-- [ ] Usé `nmcli` para inspeccionar el estado general, dispositivos y conexiones.
-- [ ] Usé `nmtui` como alternativa interactiva.
-- [ ] Exploré dónde y cómo se guardan los perfiles de conexión, y su relación con el applet gráfico.
-- [ ] Provoqué y diagnostiqué el error de activar una conexión inexistente.
+- [x] Entiendo por qué el escritorio necesita NetworkManager sobre lo que ya sabías del curso anterior.
+- [x] Entiendo que NetworkManager orquesta `wpa_supplicant`/`iwd`, no los reemplaza.
+- [x] Instalé NetworkManager y resolví (o documenté) cualquier conflicto con `systemd-networkd`.
+- [x] Usé `nmcli` para inspeccionar el estado general, dispositivos y conexiones.
+- [x] Usé `nmtui` como alternativa interactiva.
+- [x] Exploré dónde y cómo se guardan los perfiles de conexión, y su relación con el applet gráfico.
+- [x] Provoqué y diagnostiqué el error de activar una conexión inexistente.
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — `NetworkManager` instalado y activo, sin conflicto con `systemd-networkd`**
+`NetworkManager.service` queda `active (running)`, toma control de `Wired connection 1` en segundos. `systemd-networkd.service` está `inactive (dead)` y `disabled` — nunca gestionó nada en este sistema (GNOME/KDE ya traían NetworkManager como dependencia desde el principio), por eso no hubo pelea por la interfaz.
+
+![networkmanager instalado activo sin conflicto](evidencias/01-networkmanager-instalado-activo-sin-conflicto.png)
+
+**02 — `nmcli`: estado general, dispositivos y conexiones**
+`nmcli general status` muestra `connected`/`full`, con `WIFI: enabled` pero `WIFI-HW: missing` — VirtualBox no emula hardware Wi-Fi, anticipo directo del Módulo 18. `nmcli device status` confirma `enp0s3` conectado vía `Wired connection 1`; los bridges de Docker aparecen gestionados "externally".
+
+![nmcli general device connection status](evidencias/02-nmcli-general-device-connection-status.png)
+
+**03-04 — `nmtui`: menú principal y lista de conexiones**
+El menú de texto (`Edit a connection`, `Activate a connection`, `Set system hostname`, `Radio`) y, dentro de "Edit a connection", la misma lista que `nmcli connection show`: `Wired connection 1`, los bridges de Docker, loopback.
+
+![nmtui menu principal](evidencias/03-nmtui-menu-principal.png)
+![nmtui edit connection lista perfiles](evidencias/04-nmtui-edit-connection-lista-perfiles.png)
+
+**05-06 — Hallazgo real: `/etc/NetworkManager/system-connections/` completamente vacío**
+Pese a que `nmcli`/`nmtui` muestran un perfil `Wired connection 1` activo con UUID propio, el directorio no contiene ningún archivo `.nmconnection` (`total 8`, solo `.` y `..`) — NetworkManager genera automáticamente una conexión Ethernet "en memoria" cuando no hay ningún perfil guardado previamente, y no la persiste a disco hasta que se edite o guarde explícitamente.
+
+![ls system connections vacio primera vez](evidencias/05-ls-system-connections-vacio-primera-vez.png)
+![ls la confirma directorio vacio](evidencias/06-ls-la-confirma-directorio-vacio.png)
+
+**07 — Confirmación del perfil en memoria, y error intencional**
+`nmcli connection show "Wired connection 1"` expone el detalle completo del perfil (UUID, tipo `802-3-ethernet`, `autoconnect: yes`) viviendo en memoria/D-Bus sin archivo en disco. `nmcli connection up "conexion-que-no-existe"` responde `Error: unknown connection 'conexion-que-no-existe'.` — validación estricta, tal como se esperaba.
+
+![perfil en memoria y error intencional](evidencias/07-perfil-en-memoria-y-error-intencional.png)
 
 ---
 
