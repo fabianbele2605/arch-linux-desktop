@@ -37,7 +37,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 - [x] [07 — Desktop Architecture](07-desktop-architecture/07-desktop-architecture.md)
 - [x] [08 — GNOME](08-gnome/08-gnome.md)
 - [x] [09 — KDE Plasma](09-kde-plasma/09-kde-plasma.md)
-- [ ] [10 — Window Managers & Compositors](10-window-managers/10-window-managers.md)
+- [x] [10 — Window Managers & Compositors](10-window-managers/10-window-managers.md)
 
 ### Fase 04 — Power Management (teórico en VM)
 - [ ] [11 — Laptop Power Management](11-power-management/11-power-management.md)
