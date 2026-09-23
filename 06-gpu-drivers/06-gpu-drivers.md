@@ -101,7 +101,15 @@ VK_ICD_FILENAMES=/ruta/que/no/existe.json vulkaninfo
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Mesa confirmado + error real de paquete**
+`mesa 1:26.2.3-1` ("Open-source OpenGL drivers") confirmado. El paquete `mesa-vulkan-layers` no existe con ese nombre — `pacman` abortó toda la transacción, por lo que `vulkan-tools` tampoco llegó a instalarse esa vez.
+
+![Mesa version y error paquete vulkan](evidencias/01-mesa-version-y-error-paquete-vulkan.png)
+
+**02 — `vulkaninfo`: "Found no drivers!" (limitación real de VirtualBox)**
+Instalación correcta de `vulkan-icd-loader` + `vulkan-tools`, pero `vulkaninfo` confirma que no hay ningún ICD de Vulkan disponible en este entorno virtualizado — a diferencia de OpenGL (`SVGA3D`, Módulo 05), VirtualBox no expone soporte Vulkan al sistema huésped. Resultado esperado, documentado como tal.
+
+![vulkaninfo found no drivers](evidencias/02-vulkaninfo-found-no-drivers.png)
 
 ---
 
