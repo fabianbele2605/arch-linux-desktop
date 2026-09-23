@@ -120,7 +120,30 @@ upower -i /org/freedesktop/UPower/devices/battery_INEXISTENTE
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — `acpi` y `upower` instalados**
+Sin errores, instalación mínima (0.87 MiB).
+
+![acpi upower instalados](evidencias/01-acpi-upower-instalados.png)
+
+**02 — `/sys/class/power_supply/`: la batería virtual confirmada**
+`AC` y `BAT0` listados; `status` = `Charging`, `capacity` = `44` — datos reales, generados por el dispositivo ACPI virtual de VirtualBox.
+
+![sys class power supply bateria virtual](evidencias/02-sys-class-power-supply-bateria-virtual.png)
+
+**03 — `acpi -V` y `upower -e` completos**
+`Battery 0: Charging, 45%, 00:56:01 until charged`, `design capacity 5000 mAh`. `upower -e` confirma 3 dispositivos: `battery_BAT0`, `line_power_AC`, `DisplayDevice`.
+
+![acpi v upower e completo](evidencias/03-acpi-v-upower-e-completo.png)
+
+**04 — `powertop` corriendo, con datos reales de actividad**
+Procesos reales (`containerd`, `khugepaged`, `dockerd`, `Xorg`, `polkitd`) — útil para ver actividad, aunque los datos de consumo eléctrico no son significativos en una VM.
+
+![powertop corriendo overview](evidencias/04-powertop-corriendo-overview.png)
+
+**05 — `busctl` confirma D-Bus + comportamiento real del error intencional**
+`upowerd` registrado en `org.freedesktop.UPower`. Al consultar un dispositivo inexistente, `upower` no lanza un error duro — devuelve una estructura con campos `null`/`unknown` y un explícito `"0% (should be ignored)"`, un diseño defensivo distinto al anticipado en la teoría.
+
+![busctl upower dbus error dispositivo inexistente](evidencias/05-busctl-upower-dbus-error-dispositivo-inexistente.png)
 
 ---
 
