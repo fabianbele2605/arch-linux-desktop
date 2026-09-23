@@ -116,18 +116,26 @@ Documentá cuál de los dos te tocó — ambos son formas válidas de la misma v
 
 ## Checklist de cierre del módulo
 
-- [ ] Entiendo que Wi-Fi usa la misma arquitectura de orquestación del Módulo 17, con `wpa_supplicant`/`iwd` como motor de autenticación.
-- [ ] Entiendo la diferencia real entre WPA2 y WPA3 (SAE, forward secrecy), no solo que "uno es más nuevo".
-- [ ] Entiendo por qué las redes ocultas no son una medida de seguridad real.
-- [ ] Entiendo el concepto de roaming entre puntos de acceso.
-- [ ] Documenté honestamente el estado de hardware Wi-Fi disponible en mi VM.
-- [ ] Provoqué y diagnostiqué el error de `nmcli device wifi connect` según mi caso concreto.
+- [x] Entiendo que Wi-Fi usa la misma arquitectura de orquestación del Módulo 17, con `wpa_supplicant`/`iwd` como motor de autenticación.
+- [x] Entiendo la diferencia real entre WPA2 y WPA3 (SAE, forward secrecy), no solo que "uno es más nuevo".
+- [x] Entiendo por qué las redes ocultas no son una medida de seguridad real.
+- [x] Entiendo el concepto de roaming entre puntos de acceso.
+- [x] Documenté honestamente el estado de hardware Wi-Fi disponible en mi VM.
+- [x] Provoqué y diagnostiqué el error de `nmcli device wifi connect` según mi caso concreto.
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — `nmcli device status` y `rfkill list`: confirmación doble de la ausencia de hardware Wi-Fi**
+Ambos comandos vuelven sin ninguna salida — ni un dispositivo Wi-Fi en `nmcli`, ni un bloque de radio en `rfkill` (a diferencia de Bluetooth en el Módulo 16, acá ni siquiera hay un servicio que se salte por condición: directamente no existe el dispositivo en el kernel).
+
+![nmcli wifi rfkill sin hardware](evidencias/01-nmcli-wifi-rfkill-sin-hardware.png)
+
+**02 — Error intencional: `nmcli device wifi connect` sin adaptador**
+`Error: No Wi-Fi device found.` — exactamente el caso 1 de la tabla de diagnóstico esperado, confirmado con evidencia real.
+
+![nmcli wifi connect no wifi device found](evidencias/02-nmcli-wifi-connect-no-wifi-device-found.png)
 
 ---
 
