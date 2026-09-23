@@ -31,7 +31,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 ### Fase 02 — Gráficos
 - [x] [04 — Graphics Architecture](04-graphics-architecture/04-graphics-architecture.md)
 - [x] [05 — Xorg vs Wayland](05-xorg-wayland/05-xorg-wayland.md)
-- [ ] [06 — GPU Drivers, Mesa & Vulkan](06-gpu-drivers/06-gpu-drivers.md)
+- [x] [06 — GPU Drivers, Mesa & Vulkan](06-gpu-drivers/06-gpu-drivers.md)
 
 ### Fase 03 — Desktop Environments
 - [ ] [07 — Desktop Architecture](07-desktop-architecture/07-desktop-architecture.md)
