@@ -110,7 +110,20 @@ systemctl hibernate
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — `swapon --show` confirma `zram`, `logind.conf` sin directivas activas**
+`/dev/zram0 partition 2.3G` — único swap, incompatible con hibernación real. `logind.conf` solo con `[Login]`, todo por defecto.
+
+![swapon zram confirmado logind conf](evidencias/01-swapon-zram-confirmado-logind-conf.png)
+
+**02 — `systemctl suspend` ejecutado**
+El comando volvió al prompt inmediatamente, sin error — pero la VM quedó congelada poco después (no visible todavía en esta captura).
+
+![systemctl suspend ejecutado](evidencias/02-systemctl-suspend-ejecutado.png)
+
+**03 — VM recuperada tras colgarse: pantalla de login normal**
+Después del reset forzado desde VirtualBox (Machine → Reset), el sistema volvió a arrancar limpio, con la sesión "i3" recordada por SDDM — confirmando que la falla de suspensión fue un problema de la capa de virtualización, no una corrupción del sistema.
+
+![VM recuperada tras colgarse SDDM](evidencias/03-vm-recuperada-tras-colgarse-sddm.png)
 
 ---
 
