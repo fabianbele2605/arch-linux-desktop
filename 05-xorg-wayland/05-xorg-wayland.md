@@ -131,7 +131,51 @@ startx
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Error real: `twm` renombrado**
+El paquete correcto en Arch es `xorg-twm` (con prefijo), no `twm` a secas.
+
+![Error twm no encontrado](evidencias/01-error-twm-no-encontrado.png)
+
+**02 — `startx`: primer entorno gráfico real**
+Configuración por defecto de Xorg: 3 ventanas `xterm` gestionadas por `twm` — tu primera sesión gráfica en esta VM.
+
+![startx tres xterm twm](evidencias/02-startx-tres-xterm-twm.png)
+
+**03 — `loadkeys` no aplica bajo X11**
+Bajo una sesión X11, el teclado se gestiona con `setxkbmap`, no `loadkeys` (ese es solo para consola de texto).
+
+![loadkeys no aplica en X11](evidencias/03-loadkeys-no-aplica-en-x11.png)
+
+**04 — Typo real: `gre` en vez de `grep`**
+Error de tipeo simple, corregido al toque.
+
+![Typo gre en vez de grep](evidencias/04-typo-gre-en-vez-de-grep.png)
+
+**05 — `glxinfo` exitoso: `SVGA3D` confirmado bajo Xorg**
+`OpenGL renderer string: SVGA3D` — el driver Gallium3D de VirtualBox, no `llvmpipe` puro. Confirma que la aceleración 3D de la VM está activa.
+
+![glxinfo exitoso SVGA3D Xorg](evidencias/05-glxinfo-exitoso-svga3d-xorg.png)
+
+**06 — Instalando Weston**
+25 paquetes, incluyendo dependencias opcionales de backend (X11, pipewire, RDP, VNC, Vulkan).
+
+![Weston instalando](evidencias/06-weston-instalando.png)
+
+**07 — Weston lanzado: mismo `SVGA3D` confirmado**
+`GL renderer: SVGA3D` — idéntico al de Xorg, confirmando que ambos comparten el mismo Mesa/DRM por debajo. Desktop shell de Weston visible con reloj.
+
+![Weston lanzado SVGA3D confirmado](evidencias/07-weston-lanzado-svga3d-confirmado.png)
+
+**08 — `weston-terminal` abierta**
+Terminal nativa de Weston, corriendo dentro de la sesión Wayland.
+
+![Weston terminal abierta](evidencias/08-weston-terminal-abierta.png)
+
+**09-10 — `$XDG_SESSION_TYPE`: resultado con matices**
+Un intento dentro de `weston-terminal` no mostró un valor claro, y otro (fuera de la sesión activa) mostró `tty`. Nota real: al lanzar Weston manualmente desde una consola (sin un gestor de sesión/display manager de por medio), esta variable no siempre se actualiza de forma confiable — es una limitación del método de prueba manual, no una contradicción de la teoría. La confirmación más sólida del módulo sigue siendo el renderer `SVGA3D` compartido (evidencias 05 y 07).
+
+![XDG_SESSION_TYPE dentro de weston](evidencias/09-xdg-session-type-dentro-weston.png)
+![XDG_SESSION_TYPE tty](evidencias/10-xdg-session-type-tty.png)
 
 ---
 
