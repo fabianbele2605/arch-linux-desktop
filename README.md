@@ -35,7 +35,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 
 ### Fase 03 — Desktop Environments
 - [x] [07 — Desktop Architecture](07-desktop-architecture/07-desktop-architecture.md)
-- [ ] [08 — GNOME](08-gnome/08-gnome.md)
+- [x] [08 — GNOME](08-gnome/08-gnome.md)
 - [ ] [09 — KDE Plasma](09-kde-plasma/09-kde-plasma.md)
 - [ ] [10 — Window Managers & Compositors](10-window-managers/10-window-managers.md)
 
