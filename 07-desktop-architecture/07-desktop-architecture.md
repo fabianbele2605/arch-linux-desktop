@@ -127,7 +127,20 @@ busctl --user status
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — D-Bus real + XDG_CONFIG_HOME confirmado**
+`busctl list --system` muestra servicios reales (`dbus-broker`, `NetworkManager`, `systemd-logind`, `org.freedesktop.PolicyKit1`, `ColorManager`). `~/.config` contiene subcarpetas reales de módulos anteriores (`go`, `htop`, `procps`, `yay`).
+
+![D-Bus servicios y XDG config home](evidencias/01-dbus-servicios-y-xdg-config-home.png)
+
+**02 — Instalando SDDM (con Qt6)**
+28 paquetes, arrastrando toda la base Qt6 — un adelanto visual del peso que va a traer KDE Plasma en el Módulo 09.
+
+![SDDM instalando Qt6](evidencias/02-sddm-instalando-qt6.png)
+
+**03 — SDDM habilitado, inactivo (a propósito)**
+`systemctl status sddm` confirma `enabled` + `inactive (dead)` — exactamente el estado esperado antes de tener un entorno de escritorio real instalado.
+
+![SDDM enabled inactive](evidencias/03-sddm-enabled-inactive.png)
 
 ---
 
