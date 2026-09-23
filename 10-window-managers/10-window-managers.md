@@ -134,7 +134,44 @@ cp ~/.config/i3/config.backup ~/.config/i3/config
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Typo real: `i3-vm` en vez de `i3-wm`**
+Error de tipeo corregido al toque.
+
+![Typo i3-vm error](evidencias/01-typo-i3-vm-error.png)
+
+**02-03 — Instalación de `i3` completa**
+8 paquetes en total (1.25 MiB de descarga) — extremadamente liviano comparado con GNOME (466 paquetes) o KDE (546 paquetes).
+
+![i3-wm instalando](evidencias/02-i3-wm-instalando.png)
+![i3 instalacion completa](evidencias/03-i3-instalacion-completa.png)
+
+**04 — SDDM: "i3" ya disponible en la lista de sesiones**
+Junto a GNOME, Plasma, Plasma Bigscreen y Weston — todos coexistiendo sin conflicto.
+
+![SDDM lista sesiones i3 disponible](evidencias/04-sddm-lista-sesiones-i3-disponible.png)
+
+**05-06 — Primera configuración de `i3`**
+Asistente inicial generando `~/.config/i3/config`, eligiendo `Win` como tecla modificadora.
+
+![i3 primera configuracion](evidencias/05-i3-primera-configuracion.png)
+![i3 elegir modificador win](evidencias/06-i3-elegir-modificador-win.png)
+
+**07 — El "escritorio" de i3: vacío, solo la barra de estado**
+Pantalla completamente negra con `i3status` mostrando red, batería, memoria y hora en tiempo real — la esencia del minimalismo tiling.
+
+![Escritorio i3 vacio status bar](evidencias/07-escritorio-i3-vacio-status-bar.png)
+
+**08-09 — Tiling en acción: de una terminal a dos divididas automáticamente**
+`Mod+Enter` abre una terminal a pantalla completa; una segunda `Mod+Enter` divide el espacio automáticamente, sin mover ni redimensionar nada a mano.
+
+![Primera terminal fullscreen](evidencias/08-primera-terminal-fullscreen.png)
+![Tiling dos terminales divididas](evidencias/09-tiling-dos-terminales-divididas.png)
+
+**10-11 — Comparación real de recursos**
+Primer intento con `--sort=%mem` (typo, orden ascendente, mostró los procesos más livianos). Corregido a `--sort=-%mem`: `i3` en sí ocupa apenas **0.9% / ~45MB de RAM** — confirmación concreta y medible de la teoría del módulo.
+
+![free h ps aux sort incorrecto](evidencias/10-free-h-ps-aux-sort-incorrecto.png)
+![Comparacion real recursos i3](evidencias/11-comparacion-real-recursos-i3.png)
 
 ---
 
