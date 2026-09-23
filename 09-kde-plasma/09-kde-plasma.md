@@ -123,7 +123,70 @@ plasma-apply-colorscheme EsteEsquemaNoExiste
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Primer intento falla: mirror `niranjan.co` inestable**
+73/617 paquetes ya descargados cuando un mirror específico empezó a fallar con 404s y timeouts consistentes.
+
+![Primer intento falla mirror niranjan](evidencias/01-primer-intento-falla-mirror-niranjan.png)
+
+**02 — `reflector`: mirrors inestables al refrescar**
+Varios mirrors fallaron por timeout, uno incluso con error de verificación de certificado SSL.
+
+![Reflector mirror inestable](evidencias/02-reflector-mirror-inestable.png)
+
+**03 — Conflicto real de dependencias (partial upgrade)**
+`gst-plugins-base-libs` vs `gstreamer` en versiones incompatibles — el clásico error de "partial upgrade" (sincronizar sin actualizar todo) visto por primera vez en el curso `arch-linux-mastery`.
+
+![Conflicto dependencias partial upgrade](evidencias/03-conflicto-dependencias-partial-upgrade.png)
+
+**04 — `pacman -Syu`: actualización completa del sistema**
+Solución al conflicto: llevar todo el sistema a versiones consistentes antes de instalar Plasma.
+
+![pacman Syu actualizacion completa](evidencias/04-pacman-syu-actualizacion-completa.png)
+
+**05 — Instalación de Plasma: 546 paquetes**
+Tras resolver todos los selectores de proveedores (qt6-multimedia, tessdata, qt6-python-bindings), la instalación real arrancó.
+
+![Instalacion plasma 546 paquetes](evidencias/05-instalacion-plasma-546-paquetes.png)
+
+**06 — Instalación completada**
+20/20 post-transaction hooks, incluyendo generación de bundles EFI.
+
+![Instalacion completada EFI bundles](evidencias/06-instalacion-completada-efi-bundles.png)
+
+**07-08 — SDDM: eligiendo la sesión Plasma**
+De "GNOME" (sesión por defecto) a "Plasma (Wayland)" seleccionado explícitamente.
+
+![SDDM sesion GNOME antes cambiar](evidencias/07-sddm-sesion-gnome-antes-cambiar.png)
+![SDDM sesion Plasma Wayland elegida](evidencias/08-sddm-sesion-plasma-wayland-elegida.png)
+
+**09-11 — Arranque y escritorio de Plasma completo**
+Splash de carga, Welcome Center con la mascota Konqi (y un error benigno de "Plasma Bigscreen", componente opcional no instalado), y el escritorio final con fondo animado.
+
+![Splash plasma cargando](evidencias/09-splash-plasma-cargando.png)
+![Welcome center konqi bigscreen error](evidencias/10-welcome-center-konqi-bigscreen-error.png)
+![Escritorio plasma completo](evidencias/11-escritorio-plasma-completo.png)
+
+**12-13 — Menú de aplicaciones y Konsole**
+Explorando la interfaz de Plasma y abriendo la terminal nativa.
+
+![Menu aplicaciones plasma](evidencias/12-menu-aplicaciones-plasma.png)
+![Konsole abierta](evidencias/13-konsole-abierta.png)
+
+**14 — Confirmación: Wayland + KDE + SVGA3D**
+Mismo patrón exacto que GNOME (Módulo 08): `wayland`, `KDE`, y el renderer `SVGA3D` compartido.
+
+![Wayland KDE SVGA3D confirmado](evidencias/14-wayland-kde-svga3d-confirmado.png)
+
+**15 — `kdeglobals`: configuración en texto plano**
+Contraste directo con el modelo binario `dconf` de GNOME — archivos `.ini` legibles con cualquier editor.
+
+![kdeglobals texto plano](evidencias/15-kdeglobals-texto-plano.png)
+
+**16-17 — `plasma-apply-colorscheme`: cambio de tema real**
+Lista de esquemas disponibles, y aplicación exitosa de `BreezeDark` con efecto visual confirmado en la interfaz.
+
+![Plasma colorscheme list](evidencias/16-plasma-colorscheme-list.png)
+![Plasma colorscheme BreezeDark aplicado](evidencias/17-plasma-colorscheme-breezedark-aplicado.png)
 
 ---
 
