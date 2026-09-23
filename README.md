@@ -29,7 +29,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 - [x] [03 — UEFI, Bootloaders & Secure Boot](03-uefi-bootloaders/03-uefi-bootloaders.md)
 
 ### Fase 02 — Gráficos
-- [ ] [04 — Graphics Architecture](04-graphics-architecture/04-graphics-architecture.md)
+- [x] [04 — Graphics Architecture](04-graphics-architecture/04-graphics-architecture.md)
 - [ ] [05 — Xorg vs Wayland](05-xorg-wayland/05-xorg-wayland.md)
 - [ ] [06 — GPU Drivers, Mesa & Vulkan](06-gpu-drivers/06-gpu-drivers.md)
 
