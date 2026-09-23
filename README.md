@@ -45,7 +45,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 - [x] [13 — CPU/GPU Power Optimization](13-power-optimization/13-power-optimization.md)
 
 ### Fase 05 — Audio
-- [ ] [14 — Audio Architecture](14-audio-architecture/14-audio-architecture.md)
+- [x] [14 — Audio Architecture](14-audio-architecture/14-audio-architecture.md)
 - [ ] [15 — PipeWire, WirePlumber & ALSA](15-pipewire-alsa/15-pipewire-alsa.md)
 - [ ] [16 — Bluetooth Audio](16-bluetooth-audio/16-bluetooth-audio.md)
 
