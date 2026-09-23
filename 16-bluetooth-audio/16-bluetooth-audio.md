@@ -124,18 +124,36 @@ bluetoothctl connect AA:BB:CC:DD:EE:FF
 
 ## Checklist de cierre del módulo (y de la Fase 05 completa)
 
-- [ ] Entiendo la cadena BlueZ → módulo bluez5 de PipeWire → aplicaciones.
-- [ ] Entiendo la diferencia A2DP vs. HSP/HFP y por qué el perfil cambia automáticamente según el uso.
-- [ ] Instalé el stack Bluetooth y confirmé el estado de `bluetooth.service`.
-- [ ] Usé `bluetoothctl` y documenté honestamente el resultado según mi hardware disponible.
-- [ ] Completé la tabla de cierre de fase, distinguiendo qué es aprendible en VM y qué requiere hardware real.
-- [ ] Provoqué y diagnostiqué el error de conexión a un dispositivo no emparejado.
+- [x] Entiendo la cadena BlueZ → módulo bluez5 de PipeWire → aplicaciones.
+- [x] Entiendo la diferencia A2DP vs. HSP/HFP y por qué el perfil cambia automáticamente según el uso.
+- [x] Instalé el stack Bluetooth y confirmé el estado de `bluetooth.service`.
+- [x] Usé `bluetoothctl` y documenté honestamente el resultado según mi hardware disponible.
+- [x] Completé la tabla de cierre de fase, distinguiendo qué es aprendible en VM y qué requiere hardware real.
+- [x] Provoqué y diagnostiqué el error de conexión a un dispositivo no emparejado.
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Hallazgo real: el paquete `pipewire-bluez` no existe**
+`sudo pacman -S bluez bluez-utils pipewire-bluez` falla con `target not found: pipewire-bluez` — mismo patrón que `mesa-vulkan-layers` en el Módulo 06: el soporte Bluetooth (`libspa-bluez5`) viene incluido dentro del paquete `pipewire` principal, no como paquete separado.
+
+![pipewire-bluez target not found](evidencias/01-pipewire-bluez-target-not-found.png)
+
+**02 — `bluetooth.service` saltado: `ConditionPathIsDir` no se cumple**
+El servicio queda `enabled` pero `inactive (dead)` — el log confirma `Bluetooth service skipped, unmet condition check ConditionPathIsDir`: systemd chequea si existe hardware Bluetooth antes de arrancar `bluetoothd`, y en esta VM no hay ninguno. `bluetoothctl` se queda esperando indefinidamente (`Waiting to connect to bluetoothd...`), porque el demonio nunca arranca.
+
+![bluetooth service skipped conditionpathisdir](evidencias/02-bluetooth-service-skipped-conditionpathisdir.png)
+
+**03 — `/sys/class/bluetooth` vacío: confirmación definitiva de la falta de hardware**
+Sin salida — ni real ni virtual, a diferencia de la batería (Módulo 11) que VirtualBox sí emula. Software completo y correctamente instalado, sin nada que controlar.
+
+![sys class bluetooth vacio sin hardware](evidencias/03-sys-class-bluetooth-vacio-sin-hardware.png)
+
+**04 — Error intencional: `bluetoothctl connect` con MAC inventada, colgado sin demonio**
+A diferencia de lo previsto en la teoría (un mensaje de error por dispositivo no emparejado), acá el comando se queda colgado sin ninguna salida — porque `bluetoothd` directamente no está corriendo. Mismo comando, falla distinta, según en qué capa de la cadena esté realmente ausente el sistema.
+
+![bluetoothctl connect colgado sin demonio](evidencias/04-bluetoothctl-connect-colgado-sin-demonio.png)
 
 ---
 
