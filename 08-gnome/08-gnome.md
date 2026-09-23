@@ -123,7 +123,37 @@ gsettings set org.gnome.desktop.interface color-scheme "un-valor-invalido"
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01-02 — Instalando GNOME completo**
+466 paquetes en total (2.82 GiB instalados) — el grupo `gnome` completo, incluyendo GTK, Mutter, GNOME Shell, y todas las aplicaciones integradas.
+
+![Instalando GNOME 466 paquetes](evidencias/01-instalando-gnome-466-paquetes.png)
+![GNOME instalación completando](evidencias/02-gnome-instalacion-completando.png)
+
+**03 — SDDM: primera pantalla de login gráfica real del curso**
+Sesión "GNOME" seleccionada, reloj, avatar de usuario — el momento donde el Módulo 07 (display manager) y este módulo se conectan.
+
+![SDDM primera pantalla login real](evidencias/03-sddm-primera-pantalla-login-real.png)
+
+**04-05 — Escritorio GNOME real, funcionando**
+Pantalla de bienvenida oficial ("Welcome to Arch Linux") y el escritorio completo con dock, barra superior con reloj/red/audio/batería.
+
+![Bienvenida GNOME welcome](evidencias/04-bienvenida-gnome-welcome.png)
+![Escritorio GNOME real](evidencias/05-escritorio-gnome-real.png)
+
+**06 — Terminal de GNOME abierta**
+Primera terminal gráfica dentro de una sesión de escritorio completa.
+
+![Terminal GNOME abierta](evidencias/06-terminal-gnome-abierta.png)
+
+**07 — Confirmación completa: Wayland + GNOME + SVGA3D**
+`$XDG_SESSION_TYPE=wayland`, `$XDG_CURRENT_DESKTOP=GNOME`, y el mismo renderer `SVGA3D` visto en los Módulos 05-06 — círculo cerrado entre toda la Fase 02 y este módulo.
+
+![Wayland GNOME SVGA3D confirmado](evidencias/07-wayland-gnome-svga3d-confirmado.png)
+
+**08 — `gsettings`: cambio de tema en vivo**
+Alternando `color-scheme` entre `prefer-dark`/`prefer-light`, con efecto visual real confirmado en la barra superior.
+
+![gsettings cambio tema dark light](evidencias/08-gsettings-cambio-tema-dark-light.png)
 
 ---
 
