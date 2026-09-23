@@ -116,18 +116,41 @@ pactl info    # debería volver a funcionar
 
 ## Checklist de cierre del módulo
 
-- [ ] Entiendo las capas: ALSA (kernel) → PipeWire → WirePlumber → aplicaciones.
-- [ ] Entiendo por qué PipeWire unificó PulseAudio y JACK en vez de coexistir como una tercera opción.
-- [ ] Confirmé qué parte del stack ya tenía instalado desde GNOME/KDE.
-- [ ] Inspeccioné dispositivos con `wpctl status`, `pactl list sinks`, y `aplay -l`.
-- [ ] Probé `speaker-test` y documenté honestamente el resultado real (con o sin audio audible).
-- [ ] Entiendo por qué el audio corre como servicio de usuario, no de sistema.
+- [x] Entiendo las capas: ALSA (kernel) → PipeWire → WirePlumber → aplicaciones.
+- [x] Entiendo por qué PipeWire unificó PulseAudio y JACK en vez de coexistir como una tercera opción.
+- [x] Confirmé qué parte del stack ya tenía instalado desde GNOME/KDE.
+- [x] Inspeccioné dispositivos con `wpctl status`, `pactl list sinks`, y `aplay -l`.
+- [x] Probé `speaker-test` y documenté honestamente el resultado real (con o sin audio audible).
+- [x] Entiendo por qué el audio corre como servicio de usuario, no de sistema.
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — `wpctl status`: primera corrida, sin dispositivos listados**
+`pacman -Q pipewire wireplumber` confirma el stack instalado (`1:1.6.9-1` / `0.5.17-2`), pero los tres servicios (`pipewire`, `pipewire-pulse`, `wireplumber`) aparecen `inactive (dead)` — socket-activated, todavía no despertados. `wpctl status` corre sin error pero muestra Audio/Devices, Sinks, Sources todos vacíos, junto con warnings esperables de RTKit (`org.freedesktop.DBus.Error.ServiceUnknown` — no hay demonio RTKit en esta VM, PipeWire cae a valores por defecto sin problema).
+
+![wpctl status vacio primera vez](evidencias/01-wpctl-status-vacio-primera-vez.png)
+
+**02 — `pactl` sí ve el sink, `aplay` no está instalado**
+`pactl list sinks short` confirma un sink real (`alsa_output.pci-0000_00_05.0.analog-stereo`, `PipeWire`, `SUSPENDED`) — PipeWire ya despertó por socket activation al primer cliente. `aplay -l` falla con `command not found`: `alsa-utils` no viene como dependencia de `pipewire-alsa`, hay que instalarlo aparte.
+
+![pactl sinks ok aplay command not found](evidencias/02-pactl-sinks-ok-aplay-command-not-found.png)
+
+**03 — `wpctl status` de nuevo: ahora sí, dispositivo completo**
+Repetido un par de minutos después: `Built-in Audio [alsa]` como Device, con Sink y Source activos (`Built-in Audio Analog Stereo`) — simple diferencia de timing/indexado de PipeWire respecto a la primera corrida, no un error real.
+
+![wpctl status segunda vez dispositivos completos](evidencias/03-wpctl-status-segunda-vez-dispositivos-completos.png)
+
+**04 — `alsa-utils` instalado, `aplay -l` confirma la capa de kernel**
+Tras `sudo pacman -S alsa-utils`, `aplay -l` muestra `card 0: I82801AAICH [Intel 82801AA-ICH]` — el chip de audio Intel ICH que VirtualBox emula, visto directamente por ALSA en el kernel, sin PipeWire de por medio.
+
+![alsa-utils instalado aplay l ok](evidencias/04-alsa-utils-instalado-aplay-l-ok.png)
+
+**05 — `speaker-test`: pipeline completo corriendo, audio realmente escuchado**
+Dos corridas de `speaker-test -t sine -f 440 -l 1`, ambas completando el período sin error (`Time per period ≈ 3.33s`). Confirmado con audífonos puestos: el tono se escuchó — pipeline completo (kernel → ALSA → PipeWire → salida) funcionando de punta a punta, sin ninguna limitación de virtualización en este módulo.
+
+![speaker-test dos corridas audio confirmado](evidencias/05-speaker-test-dos-corridas-audio-confirmado.png)
 
 ---
 
