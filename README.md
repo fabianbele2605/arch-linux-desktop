@@ -40,7 +40,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 - [x] [10 — Window Managers & Compositors](10-window-managers/10-window-managers.md)
 
 ### Fase 04 — Power Management (teórico en VM)
-- [ ] [11 — Laptop Power Management](11-power-management/11-power-management.md)
+- [x] [11 — Laptop Power Management](11-power-management/11-power-management.md)
 - [ ] [12 — Battery, ACPI, Suspend & Hibernate](12-battery-suspend/12-battery-suspend.md)
 - [ ] [13 — CPU/GPU Power Optimization](13-power-optimization/13-power-optimization.md)
 
