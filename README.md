@@ -59,7 +59,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 - [x] [21 — Btrfs Desktop Architecture](21-btrfs/21-btrfs.md)
 - [x] [22 — Subvolumes](22-btrfs-subvolumes/22-btrfs-subvolumes.md)
 - [x] [23 — Snapshots](23-btrfs-snapshots/23-btrfs-snapshots.md)
-- [ ] [24 — Snapper & Rollback](24-snapper-rollback/24-snapper-rollback.md)
+- [x] [24 — Snapper & Rollback](24-snapper-rollback/24-snapper-rollback.md)
 
 ### Fase 08 — AUR Profesional
 - [ ] [25 — AUR Deep Dive](25-aur/25-aur.md)
