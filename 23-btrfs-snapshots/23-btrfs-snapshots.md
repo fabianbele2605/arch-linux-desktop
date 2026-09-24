@@ -133,17 +133,55 @@ rm /tmp/btrfs-snap.img
 
 ## Checklist de cierre del módulo
 
-- [ ] Entiendo que un snapshot ES un subvolumen, no una entidad separada.
-- [ ] Vi copy-on-write funcionando en la práctica: el original cambió, el snapshot no.
-- [ ] Entiendo la diferencia entre snapshots de solo lectura y de lectura-escritura, y cuándo se usa cada uno.
-- [ ] Medí el espacio real que ocupa un snapshot recién creado, confirmando que COW no duplica datos por adelantado.
-- [ ] Provoqué y diagnostiqué el error de snapshotear un subvolumen inexistente.
+- [x] Entiendo que un snapshot ES un subvolumen, no una entidad separada.
+- [x] Vi copy-on-write funcionando en la práctica: el original cambió, el snapshot no.
+- [x] Entiendo la diferencia entre snapshots de solo lectura y de lectura-escritura, y cuándo se usa cada uno.
+- [x] Medí el espacio real que ocupa un snapshot recién creado, confirmando que COW no duplica datos por adelantado.
+- [x] Provoqué y diagnostiqué el error de snapshotear un subvolumen inexistente.
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Snapshot de solo lectura creado**
+`Create readonly snapshot of '@sistema' in '@sistema-snap1'` confirmado explícitamente. `btrfs subvolume list` muestra ambos con IDs consecutivos (256/257) — el snapshot es un subvolumen más, sin distinción especial en el listado.
+
+![snapshot readonly creado ids consecutivos](evidencias/01-snapshot-readonly-creado-ids-consecutivos.png)
+
+**02 — Copy-on-write confirmado en la práctica**
+El original (`@sistema/config.txt`) cambia a `version=2.0 - ROTO A PROPOSITO`; el snapshot (`@sistema-snap1/config.txt`) queda congelado en `version=1.0` — la demostración concreta del mecanismo que hace posible el rollback de Snapper (Módulo 24).
+
+![cow confirmado original cambia snapshot congelado](evidencias/02-cow-confirmado-original-cambia-snapshot-congelado.png)
+
+**03 — Solo lectura vs. lectura-escritura, contrastados**
+Escribir en el snapshot `-r` falla con `Read-only file system`; un snapshot nuevo sin `-r` acepta la escritura sin problema (`config.txt` y `nuevo.txt` conviven).
+
+![snapshot ro rechaza escritura rw la acepta](evidencias/03-snapshot-ro-rechaza-escritura-rw-la-acepta.png)
+
+**04 — `btrfs filesystem du`: costo casi nulo del snapshot**
+Total, exclusivo y compartido en `0.00B` para ambos subvolúmenes — dado lo diminuto del archivo de prueba, los cambios caben dentro de la granularidad de bloques ya reservada, sin extents de datos nuevos medibles. Confirmación, en el caso extremo, de que COW no duplica datos por adelantado.
+
+![filesystem du costo casi nulo del snapshot](evidencias/04-filesystem-du-costo-casi-nulo-del-snapshot.png)
+
+**05 — Error intencional: snapshot de un origen inexistente**
+`ERROR: Could not statfs: No such file or directory` — mismo error que en el Módulo 21 (`subvolume delete`), ahora confirmado también para `subvolume snapshot`.
+
+![error intencional snapshot origen inexistente](evidencias/05-error-intencional-snapshot-origen-inexistente.png)
+
+**06 — Typo real: `mount` en vez de `umount`, seguido de `rm` sin desmontar**
+`mount /mnt/btrfs-snap` (sin la "u") falla buscando en `/etc/fstab`; el archivo de la imagen se borró igual, sin desmontar primero — caso real de borrar un archivo con un loop mount todavía activo.
+
+![typo mount en vez de umount rm sin desmontar](evidencias/06-typo-mount-en-vez-de-umount-rm-sin-desmontar.png)
+
+**07 — Confirmación: ya no está montado**
+`mount | grep btrfs-snap` sin resultados, `umount` responde `not mounted` — el kernel liberó el montaje por su cuenta al no quedar referencias abiertas tras el borrado.
+
+![confirmacion ya no esta montado](evidencias/07-confirmacion-ya-no-esta-montado.png)
+
+**08 — Limpieza final sin residuos**
+`ls /tmp/btrfs-snap.img` confirma que el archivo ya no existe; `losetup -a` no lista ningún loop device activo — sin rastro residual pese al desorden en el medio.
+
+![limpieza final sin residuos losetup](evidencias/08-limpieza-final-sin-residuos-losetup.png)
 
 ---
 
