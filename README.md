@@ -56,7 +56,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 - [x] [20 — Printing & CUPS](20-cups-printing/20-cups-printing.md)
 
 ### Fase 07 — Btrfs Desktop
-- [ ] [21 — Btrfs Desktop Architecture](21-btrfs/21-btrfs.md)
+- [x] [21 — Btrfs Desktop Architecture](21-btrfs/21-btrfs.md)
 - [ ] [22 — Subvolumes](22-btrfs-subvolumes/22-btrfs-subvolumes.md)
 - [ ] [23 — Snapshots](23-btrfs-snapshots/23-btrfs-snapshots.md)
 - [ ] [24 — Snapper & Rollback](24-snapper-rollback/24-snapper-rollback.md)
