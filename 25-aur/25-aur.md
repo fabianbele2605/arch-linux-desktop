@@ -126,24 +126,62 @@ El AUR tuvo incidentes reales de paquetes maliciosos subidos por usuarios (no ha
 git clone https://aur.archlinux.org/paquete-que-no-existe-12345.git /tmp/paquete-fantasma
 ```
 
-**Diagnóstico esperado:** un error de git indicando que el repositorio remoto no existe (`repository 'https://aur.archlinux.org/...' not found`) — el AUR expone cada paquete como un repo git individual, y clonar uno inexistente falla exactamente como clonar cualquier repo de GitHub que no existe, mismo mecanismo que ya conocés del curso anterior.
+**Diagnóstico esperado:** un error de git indicando que el repositorio remoto no existe. **Diagnóstico real, confirmado en la práctica:** a diferencia de GitHub, el servidor git del AUR (`cgit`) no rechaza el clone — entrega un repositorio **vacío** (`warning: You appear to have cloned an empty repository`), sin `PKGBUILD` ni `.SRCINFO` adentro. Es la infraestructura real que usás para subir un paquete propio nuevo: el slot existe vacío hasta el primer push. Un comportamiento distinto al anticipado, pero igual de válido como validación — la ausencia de contenido es la señal de que el paquete no existe.
 
 ---
 
 ## Checklist de cierre del módulo
 
-- [ ] Entiendo que el AUR es un repositorio de recetas de compilación, no de binarios.
-- [ ] Entiendo la diferencia de modelo de confianza entre `core`/`extra` (revisado por Arch) y el AUR (sin revisión oficial).
-- [ ] Cloné un paquete AUR y exploré su estructura (`PKGBUILD`, `.SRCINFO`).
-- [ ] Leí un `PKGBUILD` completo, identificando qué revisar antes de confiar en él.
-- [ ] Compilé un paquete AUR con `makepkg -s` y confirmé el `.pkg.tar.zst` generado.
-- [ ] Provoqué y diagnostiqué el error de clonar un paquete AUR inexistente.
+- [x] Entiendo que el AUR es un repositorio de recetas de compilación, no de binarios.
+- [x] Entiendo la diferencia de modelo de confianza entre `core`/`extra` (revisado por Arch) y el AUR (sin revisión oficial).
+- [x] Cloné un paquete AUR y exploré su estructura (`PKGBUILD`, `.SRCINFO`).
+- [x] Leí un `PKGBUILD` completo, identificando qué revisar antes de confiar en él.
+- [x] Compilé un paquete AUR con `makepkg -s` y confirmé el `.pkg.tar.zst` generado.
+- [x] Provoqué y diagnostiqué el comportamiento real de clonar un paquete AUR inexistente (repo vacío, no error).
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Clonado el paquete AUR `visual-studio-code-bin`, `.SRCINFO` confirmado**
+Clone limpio (1449 objetos); estructura real: `.git`, `.gitignore`, `.nvchecker.toml`, `PKGBUILD`, `.SRCINFO`, y archivos extra del paquete (`.install`, `.sh`). `.SRCINFO` confirma `pkgver=1.139.0`, licencia `custom;commercial`, soporte `x86_64`/`aarch64`/`armv7h`, y la lista completa de dependencias.
+
+![clone aur vscode srcinfo confirmado](evidencias/01-clone-aur-vscode-srcinfo-confirmado.png)
+
+**02 — `PKGBUILD` revisado: fuente oficial, checksums reales**
+`source=()` apunta a `update.code.visualstudio.com` (dominio oficial Microsoft); `sha256sums=()` con hashes reales, sin ningún `SKIP`; mantenedor identificado (`D. Can Celasun`); `package()` sin nada sospechoso — extracción, symlinks, y un `chmod u-s chrome-sandbox` justificado con comentario (compatibilidad con kernels tipo `linux-hardened`).
+
+![pkgbuild fuente oficial checksums reales](evidencias/02-pkgbuild-fuente-oficial-checksums-reales.png)
+
+**03 — `base-devel` ya instalado**
+`up to date — skipping` — quedó del curso anterior, sin necesitar reinstalación.
+
+![base-devel ya instalado](evidencias/03-base-devel-ya-instalado.png)
+
+**04 — `makepkg -s`: compilación exitosa, con hooks de `snap-pac` en vivo**
+Instala automáticamente la dependencia faltante (`lsof`); `Validating source files with sha256sums... Passed`; compilación dentro de un entorno `fakeroot`. De paso, los hooks `Performing snapper pre/post snapshots...` del Módulo 24 se disparan automáticamente alrededor de la instalación de `lsof` — conexión en vivo entre dos módulos consecutivos. Termina con `Finished making: visual-studio-code-bin 1.139.0-1`.
+
+![makepkg s compilacion exitosa snap-pac hooks](evidencias/04-makepkg-s-compilacion-exitosa-snap-pac-hooks.png)
+
+**05 — El `.pkg.tar.zst` generado**
+`visual-studio-code-bin-1.139.0-1-x86_64.pkg.tar.zst` — mismo formato que cualquier paquete oficial de `core`/`extra`, compilado íntegramente en la propia VM.
+
+![pkg tar zst generado](evidencias/05-pkg-tar-zst-generado.png)
+
+**06 — Typo real en la URL del error intencional**
+`https` se corrompió a `htt[c` al tipear, dando `Fatal: protocol 'htt[' is not supported` — corregido reintentando con cuidado.
+
+![typo url protocolo invalido](evidencias/06-typo-url-protocolo-invalido.png)
+
+**07 — Hallazgo real: el AUR no rechaza el clone de un paquete inexistente, clona un repo vacío**
+Distinto a lo anticipado en la teoría (un error tipo GitHub 404): `git clone` de un nombre de paquete inventado da `warning: You appear to have cloned an empty repository` — el servidor git del AUR (basado en `cgit`) entrega un repositorio vacío en vez de rechazar la conexión.
+
+![hallazgo real aur clona repo vacio no error](evidencias/07-hallazgo-real-aur-clona-repo-vacio-no-error.png)
+
+**08 — Confirmado: directorio completamente vacío salvo `.git`**
+`ls -la` no muestra ni `PKGBUILD` ni `.SRCINFO` — solo el esqueleto interno de git, confirmando que no es un paquete real.
+
+![confirmado directorio vacio solo git](evidencias/08-confirmado-directorio-vacio-solo-git.png)
 
 ---
 
