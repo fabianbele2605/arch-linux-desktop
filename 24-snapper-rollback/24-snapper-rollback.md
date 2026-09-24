@@ -4,7 +4,7 @@
 
 Con este módulo cerramos la Fase 07.
 
-> **Nota de adaptación importante:** confirmado desde el Módulo 21 — tu partición raíz real es ext4, no Btrfs. Snapper **requiere Btrfs** para funcionar (sus snapshots son, literalmente, los `btrfs subvolume snapshot` que ya practicaste). Podés instalarlo y explorar su configuración sin problema, pero `snapper create` sobre tu `/` real va a fallar. Este módulo documenta la herramienta completa igual — es exactamente lo que instalarías el día que tengas Arch en Btrfs real, sea en esta VM reinstalada o en hardware físico.
+> **Nota de adaptación importante:** confirmado desde el Módulo 21 — tu partición raíz real es ext4, no Btrfs. Aunque `snapper --version` muestra soporte compilado también para `ext4`/`lvm` (vía snapshots LVM thin, no COW nativo), tu sistema actual no usa LVM tampoco (Módulo 21: partición directa) — así que `create-config` contra tu `/` real va a fallar igual, aunque no necesariamente por el motivo que esperás. Este módulo documenta la herramienta completa igual — es exactamente lo que instalarías el día que tengas Arch en Btrfs real, sea en esta VM reinstalada o en hardware físico.
 
 ---
 
@@ -143,18 +143,56 @@ sudo snapper -c root list
 
 ## Checklist de cierre del módulo (y de la Fase 07 completa)
 
-- [ ] Entiendo qué automatiza Snapper sobre el mecanismo manual que ya practiqué en los Módulos 21-23.
-- [ ] Instalé Snapper y documenté honestamente la limitación de `create-config` sobre mi `/` real (ext4).
-- [ ] Entiendo el rol de `snap-pac` como hook automático de `pacman`.
-- [ ] Entiendo qué controla el archivo de configuración por subvolumen (`TIMELINE_*`, `NUMBER_LIMIT`).
-- [ ] Puedo explicar paso a paso qué pasa realmente en un rollback — cambio de subvolumen activo, no restauración archivo por archivo.
-- [ ] Provoqué y diagnostiqué el error de listar snapshots de una configuración inexistente.
+- [x] Entiendo qué automatiza Snapper sobre el mecanismo manual que ya practiqué en los Módulos 21-23.
+- [x] Instalé Snapper y documenté honestamente la limitación de `create-config` sobre mi `/` real (ext4).
+- [x] Entiendo el rol de `snap-pac` como hook automático de `pacman`.
+- [x] Entiendo qué controla el archivo de configuración por subvolumen (`TIMELINE_*`, `NUMBER_LIMIT`).
+- [x] Puedo explicar paso a paso qué pasa realmente en un rollback — cambio de subvolumen activo, no restauración archivo por archivo.
+- [x] Provoqué y diagnostiqué el error de listar snapshots de una configuración inexistente.
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Snapper instalado, `create-config` falla por una dependencia faltante**
+`snapper --version` confirma flags de compilación con soporte `btrfs, bcachefs, lvm, ext4, xattrs, rollback` — Snapper soporta ext4 también (vía LVM thin), no es exclusivo de Btrfs. `sudo snapper -c root create-config /` falla, pero con un error distinto al anticipado: `Creating config failed (/sbin/chsnap not installed)`.
+
+![snapper instalado create-config falla chsnap](evidencias/01-snapper-instalado-create-config-falla-chsnap.png)
+
+**02 — `chsnap` sin dueño, falta sincronizar la base de archivos**
+`pacman -Qo /sbin/chsnap` → `No package owns /sbin/chsnap`. `pacman -Fx chsnap` pide sincronizar primero (`use -Fy to download`).
+
+![chsnap sin dueno falta sincronizar file db](evidencias/02-chsnap-sin-dueno-falta-sincronizar-file-db.png)
+
+**03 — `pacman -Fy` sincronizando la base de archivos completa**
+Descarga completa de los índices de archivos de `core` y `extra`.
+
+![pacman fy sincronizando base de archivos](evidencias/03-pacman-fy-sincronizando-base-de-archivos.png)
+
+**04 — Hallazgo real: `chsnap` no existe en ningún paquete de los repos oficiales**
+`pacman -F chsnap` no devuelve nada — ni un solo paquete de `core`/`extra` provee ese binario. Conexión directa con el próximo módulo (AUR Deep Dive): herramientas así, ausentes de los repos oficiales, son justamente el tipo de caso que resuelve el AUR.
+
+![chsnap no existe en repos oficiales](evidencias/04-chsnap-no-existe-en-repos-oficiales.png)
+
+**05 — Typo real: `frep` en vez de `grep`**
+Corregido al toque, sin consecuencia.
+
+![typo frep en vez de grep](evidencias/05-typo-frep-en-vez-de-grep.png)
+
+**06 — Confirmado: `chsnap` ni siquiera es dependencia opcional documentada de `snapper`**
+`Optional Deps` de `snapper` es únicamente `pam, pam_snapper [installed]` — refuerza que `chsnap` es ajeno al empaquetado oficial, probablemente específico de la ruta LVM/ext4 menos común.
+
+![optional deps snapper sin chsnap](evidencias/06-optional-deps-snapper-sin-chsnap.png)
+
+**07 — `snap-pac` instalado, descripción confirmada palabra por palabra**
+*"Pacman hooks that use snapper to create pre/post btrfs snapshots like openSUSE's YaST"* — coincide exactamente con la explicación de la sección 4 del módulo, incluyendo la misma referencia a openSUSE.
+
+![snap-pac instalado descripcion confirmada](evidencias/07-snap-pac-instalado-descripcion-confirmada.png)
+
+**08 — Error intencional: configuración `root` inexistente**
+`sudo snapper -c root list` responde `The config 'root' does not exist. Likely snapper is not configured. See 'man snapper' for further instructions.` — validación estricta, con sugerencia amigable del siguiente paso.
+
+![error intencional config root no existe](evidencias/08-error-intencional-config-root-no-existe.png)
 
 ---
 
