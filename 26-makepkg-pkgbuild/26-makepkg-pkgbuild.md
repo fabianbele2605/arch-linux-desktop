@@ -176,18 +176,61 @@ sed -i 's/source=.*/source=("saludo-curso.sh")/' PKGBUILD
 
 ## Checklist de cierre del módulo
 
-- [ ] Entiendo todas las variables principales de un `PKGBUILD` (`pkgname`, `pkgver`, `pkgrel`, `depends` vs. `makedepends`, etc.).
-- [ ] Entiendo las funciones del ciclo de vida (`prepare`, `build`, `check`, `package`) y por qué solo `package()` es obligatoria.
-- [ ] Entiendo por qué `makepkg` usa `fakeroot` en vez de privilegios reales de root.
-- [ ] Escribí un `PKGBUILD` propio desde cero y lo compilé con `makepkg -s`.
-- [ ] Instalé mi propio paquete con `pacman -U` y confirmé que funciona como cualquier paquete del sistema.
-- [ ] Provoqué y diagnostiqué el error de un `source` inexistente.
+- [x] Entiendo todas las variables principales de un `PKGBUILD` (`pkgname`, `pkgver`, `pkgrel`, `depends` vs. `makedepends`, etc.).
+- [x] Entiendo las funciones del ciclo de vida (`prepare`, `build`, `check`, `package`) y por qué solo `package()` es obligatoria.
+- [x] Entiendo por qué `makepkg` usa `fakeroot` en vez de privilegios reales de root.
+- [x] Escribí un `PKGBUILD` propio desde cero y lo compilé con `makepkg -s`.
+- [x] Instalé mi propio paquete con `pacman -U` y confirmé que funciona como cualquier paquete del sistema.
+- [x] Provoqué y diagnostiqué el error de un `source` inexistente.
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — El "software" a empaquetar: un script bash trivial**
+`saludo-curso.sh` creado y marcado ejecutable — el contenido a empaquetar, deliberadamente simple para enfocarse en el `PKGBUILD` mismo.
+
+![script saludo-curso creado](evidencias/01-script-saludo-curso-creado.png)
+
+**02 — `PKGBUILD` propio, escrito desde cero**
+Todas las variables de la sección 1 completas, con `source` local y `sha256sums=('SKIP')` justificado (archivo propio, no descargado).
+
+![pkgbuild propio escrito](evidencias/02-pkgbuild-propio-escrito.png)
+
+**03 — `makepkg -s`: compilación exitosa**
+`Finished making: saludo-curso 1.0-1` en segundos (sin `build()` real que ejecutar). Confirmación de `saludo-curso.sh ... Skipped` en la validación de checksums.
+
+![makepkg s compilacion exitosa](evidencias/03-makepkg-s-compilacion-exitosa.png)
+
+**04 — Instalado con `pacman -U`, funciona, metadata completa**
+El comando corre e imprime el mensaje; `pacman -Qi saludo-curso` reporta toda la metadata del `PKGBUILD` (`Description`, `URL`, `Licenses: MIT`) — indistinguible de un paquete oficial. Los hooks de `snap-pac` (Módulo 24) se disparan una vez más, de fondo.
+
+![instalado con pacman u funciona metadata completa](evidencias/04-instalado-con-pacman-u-funciona-metadata-completa.png)
+
+**05 — Desinstalado limpio con `pacman -R`**
+Sin rastro en el sistema, hooks de `snap-pac` disparándose otra vez.
+
+![desinstalado limpio pacman r](evidencias/05-desinstalado-limpio-pacman-r.png)
+
+**06 — `source` modificado a un archivo inexistente, `makepkg` rechaza reconstruir sin `-f`**
+Paso intermedio inesperado: `A package has already been built. (use -f to overwrite)` — validación defensiva adicional antes de llegar al error buscado.
+
+![source modificado makepkg rechaza build existente](evidencias/06-source-modificado-makepkg-rechaza-build-existente.png)
+
+**07 — Error intencional confirmado, con `-f`**
+`ERROR: archivo-que-no-existe.sh was not found in the build directory and is not a URL.` — validación de `source=()` confirmada, tal como se esperaba.
+
+![error intencional source no encontrado confirmado](evidencias/07-error-intencional-source-no-encontrado-confirmado.png)
+
+**08 — Intento fallido de restaurar el `PKGBUILD` con `sed`**
+`sed: -e expression #1, char 29: unterminated 's' command` — problema de comillas al tipear en la VM.
+
+![sed restaurar falla comillas](evidencias/08-sed-restaurar-falla-comillas.png)
+
+**09 — `PKGBUILD` restaurado correctamente, con comillas dobles**
+`source=("saludo-curso.sh")` confirmado de vuelta al valor original.
+
+![pkgbuild restaurado correctamente](evidencias/09-pkgbuild-restaurado-correctamente.png)
 
 ---
 
