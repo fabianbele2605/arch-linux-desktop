@@ -2,7 +2,7 @@
 
 **Fase 07 — Btrfs Desktop**
 
-> **Nota de adaptación importante:** en el curso anterior instalaste tu sistema con LVM + ext4 (Módulo 11 de `arch-linux-mastery`) — el filesystem tradicional de servidor. Este módulo asume `Btrfs`, así que el primer paso es **confirmar qué tenés realmente** en tu VM actual. Si tu partición raíz es ext4, este módulo (y toda la Fase 07) va a ser mayormente conceptual sobre esta instalación existente — documentalo honestamente. Si en algún momento querés practicar Btrfs de verdad, la opción más simple es crear una imagen de disco nueva de prueba con `truncate`/`losetup` sin tocar tu sistema real, algo que vamos a ver en la sección 5.
+> **Nota de adaptación importante:** este módulo asume `Btrfs`, así que el primer paso es **confirmar qué tenés realmente** en tu VM actual. Si tu partición raíz es ext4 (confirmado en la práctica: `/dev/sda2 ext4`, partición directa sin LVM), este módulo (y toda la Fase 07) va a ser mayormente conceptual sobre esta instalación existente — documentalo honestamente. La opción práctica es crear una imagen de disco nueva de prueba con `truncate`/`losetup` sin tocar tu sistema real, algo que vamos a ver en la sección 5.
 
 ---
 
@@ -130,19 +130,42 @@ rm /tmp/btrfs-practica.img
 
 ## Checklist de cierre del módulo
 
-- [ ] Confirmé qué filesystem usa realmente mi VM (ext4/LVM del curso anterior, lo más probable).
-- [ ] Entiendo la diferencia arquitectónica entre LVM+ext4 (dos capas) y Btrfs (una capa única).
-- [ ] Entiendo copy-on-write y por qué hace que los snapshots sean casi instantáneos.
-- [ ] Entiendo qué es un subvolumen y por qué separar `/` y `/home` en subvolúmenes distintos importa para rollback (anticipo del Módulo 24).
-- [ ] Creé un Btrfs de prueba en una imagen de disco, sin tocar mi sistema real.
-- [ ] Creé un subvolumen y confirmé su contenido.
-- [ ] Provoqué y diagnostiqué el error de eliminar un subvolumen inexistente.
+- [x] Confirmé qué filesystem usa realmente mi VM (ext4/LVM del curso anterior, lo más probable).
+- [x] Entiendo la diferencia arquitectónica entre LVM+ext4 (dos capas) y Btrfs (una capa única).
+- [x] Entiendo copy-on-write y por qué hace que los snapshots sean casi instantáneos.
+- [x] Entiendo qué es un subvolumen y por qué separar `/` y `/home` en subvolúmenes distintos importa para rollback (anticipo del Módulo 24).
+- [x] Creé un Btrfs de prueba en una imagen de disco, sin tocar mi sistema real.
+- [x] Creé un subvolumen y confirmé su contenido.
+- [x] Provoqué y diagnostiqué el error de eliminar un subvolumen inexistente.
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Filesystem real confirmado: ext4 directo, sin LVM**
+`findmnt -T /` muestra `/dev/sda2 ext4`. `lsblk -f` confirma la estructura completa: `sda1` FAT32 (`/boot`), `sda2` ext4 (`/`) — partición directa, sin capa LVM de por medio (más simple de lo que anticipaba la nota de adaptación). Swap sigue siendo `zram0`, coherente con el Módulo 12.
+
+![findmnt lsblk ext4 sin lvm confirmado](evidencias/01-findmnt-lsblk-ext4-sin-lvm-confirmado.png)
+
+**02 — `btrfs-progs` instalado, regenera el initramfs**
+La instalación dispara `mkinitcpio` (agrega el hook `btrfs` disponible para el kernel). Warnings de firmware faltante (`ast`, `xhci_pci_renesas`, etc.) son ruido esperable de VM, sin impacto real.
+
+![btrfs-progs instalado initramfs regenerado](evidencias/02-btrfs-progs-instalado-initramfs-regenerado.png)
+
+**03 — Filesystem Btrfs de prueba creado y montado**
+`mkfs.btrfs` sobre la imagen de 1GB, con metadata en perfil `DUP`. `df -hT` confirma el montaje (`/dev/loop0`, `btrfs`, `1.0G`, solo `6.1M` usados). `btrfs filesystem show` confirma el UUID y el device asociado.
+
+![mkfs btrfs imagen montada filesystem show](evidencias/03-mkfs-btrfs-imagen-montada-filesystem-show.png)
+
+**04 — Subvolumen creado, con archivo de prueba**
+`btrfs subvolume create` confirmado; `btrfs subvolume list` muestra `ID 256` — los primeros 255 IDs están reservados internamente por Btrfs, así que el primer subvolumen de usuario arranca en 256. El archivo escrito dentro se lee correctamente.
+
+![subvolumen creado archivo de prueba](evidencias/04-subvolumen-creado-archivo-de-prueba.png)
+
+**05 — Error intencional y limpieza final**
+`btrfs subvolume delete` sobre una ruta inexistente responde `ERROR: Could not statfs: No such file or directory` — validación estricta confirmada. Desmontaje y borrado de la imagen de prueba sin dejar rastro en el sistema real.
+
+![error intencional y limpieza final](evidencias/05-error-intencional-y-limpieza-final.png)
 
 ---
 
