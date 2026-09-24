@@ -62,7 +62,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 - [x] [24 — Snapper & Rollback](24-snapper-rollback/24-snapper-rollback.md)
 
 ### Fase 08 — AUR Profesional
-- [ ] [25 — AUR Deep Dive](25-aur/25-aur.md)
+- [x] [25 — AUR Deep Dive](25-aur/25-aur.md)
 - [ ] [26 — makepkg & PKGBUILD](26-makepkg-pkgbuild/26-makepkg-pkgbuild.md)
 - [ ] [27 — AUR Helpers](27-aur-helpers/27-aur-helpers.md)
 - [ ] [28 — Package Cache & Maintenance](28-package-cache/28-package-cache.md)
