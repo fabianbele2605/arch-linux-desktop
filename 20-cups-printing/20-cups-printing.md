@@ -111,18 +111,56 @@ lp -d "impresora-que-no-existe" /tmp/prueba-modulo20.txt
 
 ## Checklist de cierre del módulo (y de la Fase 06 completa)
 
-- [ ] Entiendo a CUPS como demonio central de impresión, con la misma arquitectura de abstracción que ya viste en otros servicios de sistema.
-- [ ] Entiendo la diferencia entre drivers PPD tradicionales e IPP Everywhere.
-- [ ] Instalé CUPS y confirmé la interfaz web en el puerto 631.
-- [ ] Agregué y usé la impresora virtual PDF para probar el flujo completo sin hardware real.
-- [ ] Imprimí un archivo real desde la terminal con `lp` y confirmé el resultado.
-- [ ] Provoqué y diagnostiqué el error de imprimir a un destino inexistente.
+- [x] Entiendo a CUPS como demonio central de impresión, con la misma arquitectura de abstracción que ya viste en otros servicios de sistema.
+- [x] Entiendo la diferencia entre drivers PPD tradicionales e IPP Everywhere.
+- [x] Instalé CUPS y confirmé la interfaz web en el puerto 631.
+- [x] Agregué y usé la impresora virtual PDF para probar el flujo completo sin hardware real.
+- [x] Imprimí un archivo real desde la terminal con `lp` y confirmé el resultado.
+- [x] Provoqué y diagnostiqué el error de imprimir a un destino inexistente.
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — Instalación de `cups` y `cups-pdf`**
+6 paquetes (`libppd`, `cups-filters`, `cups-pdf`, `libcupsfilters`, `cups`, `pdfio`), sin errores. El instalador informa la ubicación por defecto de la salida (`/var/spool/cups-pdf/$username`) y que la interfaz web queda en `localhost:631`.
+
+![instalacion cups cups-pdf](evidencias/01-instalacion-cups-cups-pdf.png)
+
+**02 — `cups.service` activo, interfaz web respondiendo**
+`active (running)` desde el arranque. Typo real en el camino: `curl -sI http://localhost:631 | gead -5` (`gead` no existe), corregido a `head -5` → `HTTP/1.1 200 OK`. `lpstat -p -d` confirma que todavía no hay ninguna impresora registrada (`No destinations added`).
+
+![cups service activo interfaz web 200 ok](evidencias/02-cups-service-activo-interfaz-web-200-ok.png)
+
+**03 — Hallazgo real: `-m everywhere` no aplica a `cups-pdf`**
+`sudo lpadmin -p PDF -E -v cups-pdf:/ -m everywhere` falla con `IPP Everywhere driver requires an IPP connection` — `cups-pdf:/` es un backend local de CUPS, no una impresora de red que hable IPP, así que el driver universal de la sección 1 no es aplicable acá.
+
+![lpadmin everywhere falla no es ipp](evidencias/03-lpadmin-everywhere-falla-no-es-ipp.png)
+
+**04 — Localizando el PPD específico de `cups-pdf`**
+`find /usr/share/cups -iname "*pdf*"` encuentra `CUPS-PDF_opt.ppd` y `CUPS-PDF_noopt.ppd` en `/usr/share/cups/model/` — el driver correcto para este backend específico.
+
+![ppd cups-pdf encontrado](evidencias/04-ppd-cups-pdf-encontrado.png)
+
+**05 — Impresora PDF registrada con el PPD correcto**
+`sudo lpadmin -p PDF -E -v cups-pdf:/ -P /usr/share/cups/model/CUPS-PDF_opt.ppd` funciona; `lpstat -p -d` confirma `printer PDF is idle, enabled`. CUPS avisa de paso que los drivers PPD tradicionales están deprecados a favor de IPP Everywhere — la misma transición que explica la sección 1 del módulo, confirmada en un mensaje real del sistema.
+
+![impresora pdf registrada con ppd correcto](evidencias/05-impresora-pdf-registrada-con-ppd-correcto.png)
+
+**06 — Trabajo de impresión real enviado**
+`lp -d PDF /tmp/prueba-modulo20.txt` acepta el trabajo (`request id is PDF-1`); `lpstat -o` ya no lo muestra en cola (procesado). `~/PDF/` no existe — la ubicación real es otra (ver evidencia 07).
+
+![lp trabajo enviado cola vacia](evidencias/06-lp-trabajo-enviado-cola-vacia.png)
+
+**07 — El PDF real, confirmado en `/var/spool/cups-pdf/`**
+`prueba-modulo20.txt__bian.pdf`, 8283 bytes, generado por `fabian:fabian` — el flujo completo (`lp` → cola de CUPS → backend `cups-pdf` → archivo real) funcionó de punta a punta, sin ninguna limitación de la VM.
+
+![pdf real generado var spool cups pdf](evidencias/07-pdf-real-generado-var-spool-cups-pdf.png)
+
+**08 — Error intencional: imprimir a un destino inexistente**
+`lp -d "impresora-que-no-existe" ...` responde `lp: Error - The printer or class does not exist.` — validación estricta confirmada.
+
+![error intencional impresora inexistente](evidencias/08-error-intencional-impresora-inexistente.png)
 
 ---
 
