@@ -52,7 +52,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 ### Fase 06 — Desktop Networking
 - [x] [17 — NetworkManager](17-networkmanager/17-networkmanager.md)
 - [x] [18 — Wi-Fi (adaptado)](18-wifi/18-wifi.md)
-- [ ] [19 — Bluetooth (opcional)](19-bluetooth/19-bluetooth.md)
+- [x] [19 — Bluetooth (opcional)](19-bluetooth/19-bluetooth.md)
 - [ ] [20 — Printing & CUPS](20-cups-printing/20-cups-printing.md)
 
 ### Fase 07 — Btrfs Desktop
