@@ -53,7 +53,7 @@ Se cursa en una VM de **VirtualBox** (mismo entorno que el curso anterior), no e
 - [x] [17 — NetworkManager](17-networkmanager/17-networkmanager.md)
 - [x] [18 — Wi-Fi (adaptado)](18-wifi/18-wifi.md)
 - [x] [19 — Bluetooth (opcional)](19-bluetooth/19-bluetooth.md)
-- [ ] [20 — Printing & CUPS](20-cups-printing/20-cups-printing.md)
+- [x] [20 — Printing & CUPS](20-cups-printing/20-cups-printing.md)
 
 ### Fase 07 — Btrfs Desktop
 - [ ] [21 — Btrfs Desktop Architecture](21-btrfs/21-btrfs.md)

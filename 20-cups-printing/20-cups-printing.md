@@ -1,11 +1,135 @@
 # Módulo 20 — Printing & CUPS
 
-**Estado:** 🔜 Pendiente de desarrollo
+**Fase 06 — Desktop Networking**
 
-Temario completo de este módulo: [docs/guia.md](../docs/guia.md)
+Con este módulo cerramos la Fase 06.
+
+---
+
+## Objetivos del módulo
+
+- Entender la arquitectura de impresión en Linux: `CUPS` (Common Unix Printing System) como demonio central.
+- Instalar `CUPS` y explorar su interfaz web de administración.
+- Entender drivers de impresora (PPD/IPP) y colas de impresión.
+- Usar `lp`/`lpr`/`lpstat` desde terminal, y agregar una impresora virtual PDF para probar el flujo completo sin hardware real.
+
+---
+
+## 1. CONCEPTO: CUPS como demonio central de impresión
+
+```
+Aplicación (navegador, LibreOffice, terminal)
+        ↓ envía un trabajo de impresión
+CUPS (cupsd — demonio de sistema, gestiona colas y drivers)
+        ↓
+Driver de la impresora (PPD tradicional, o IPP Everywhere — sin driver específico, estándar moderno)
+        ↓
+Impresora (USB, red, o virtual — ej. "Imprimir a PDF")
+```
+
+**Mismo patrón arquitectónico que ya reconocés de sobra a esta altura del curso:** un demonio de sistema (como `bluetoothd`, Módulo 16, o `NetworkManager`, Módulo 17) que abstrae el hardware real detrás de una interfaz uniforme — cualquier aplicación "imprime" de la misma forma, sin necesitar saber si el destino es una impresora USB, una de red, o un PDF.
+
+**IPP Everywhere, la evolución relevante:** durante años, cada impresora necesitaba un archivo PPD específico del fabricante. Hoy, la mayoría de las impresoras modernas hablan **IPP** (Internet Printing Protocol) de forma nativa — CUPS puede autodetectarlas y configurarlas sin ningún driver instalado manualmente, mismo espíritu de "estándar en vez de driver propietario" que viste con ACPI (Módulo 11) o D-Bus (Módulo 07).
+
+---
+
+## 2. HERRAMIENTA: instalar y activar CUPS
+
+```bash
+sudo pacman -S cups cups-pdf
+sudo systemctl enable --now cups.service
+systemctl status cups.service
+```
+
+`cups-pdf` agrega una impresora virtual ("Imprimir a PDF") — útil específicamente para este módulo, porque te permite probar el flujo completo de impresión sin depender de hardware físico, algo que la VM no puede darte de otra forma (mismo espíritu de adaptación que ya aplicaste en Módulos 16 y 18, pero acá sí hay una solución completa disponible).
+
+---
+
+## 3. HERRAMIENTA: la interfaz web de administración
+
+CUPS expone una interfaz web completa en el puerto `631`, sirviéndose a sí mismo — no necesita nginx ni ningún servidor externo (mismo patrón que viste con Prometheus/Grafana en el curso anterior, cada servicio sirviendo su propia UI).
+
+```bash
+curl -sI http://localhost:631 | head -5
+```
+
+Desde un navegador dentro de la VM (GNOME/KDE, Módulos 08-09): `http://localhost:631` — ahí podés ver impresoras configuradas, colas de trabajos, y agregar impresoras nuevas gráficamente.
+
+---
+
+## 4. HERRAMIENTA: agregar la impresora virtual PDF
+
+```bash
+lpstat -p -d    # impresoras configuradas y la que está por defecto
+lpinfo -v         # dispositivos de impresión detectados por CUPS
+```
+
+Si `cups-pdf` no aparece automáticamente en `lpstat -p`, agregala manualmente:
+
+```bash
+sudo lpadmin -p PDF -E -v cups-pdf:/ -m everywhere
+lpstat -p
+```
+
+---
+
+## 5. HERRAMIENTA: imprimir desde la terminal — `lp`/`lpr`
+
+```bash
+echo "Módulo 20 - prueba de impresión real" > /tmp/prueba-modulo20.txt
+lp -d PDF /tmp/prueba-modulo20.txt
+```
+
+```bash
+lpstat -o    # trabajos de impresión en cola
+ls ~/PDF/ 2>/dev/null    # cups-pdf guarda la salida acá por defecto
+```
+
+**Conexión directa con el curso anterior:** `lp`/`lpr` son exactamente el tipo de herramienta CLI-first que ya dominás — podés scriptear impresión desde cualquier automatización (Ansible, cron) sin tocar nunca una interfaz gráfica, mismo espíritu que `nmcli` (Módulo 17).
+
+---
+
+## 6. PRÁCTICA
+
+1. Instalá `cups` y `cups-pdf`, confirmá que `cups.service` está activo.
+2. Confirmá que la interfaz web responde en el puerto 631.
+3. Agregá (o confirmá que ya existe) la impresora virtual `PDF`, y listala con `lpstat -p -d`.
+4. Enviá un trabajo de impresión real con `lp` hacia la impresora PDF, y confirmá que el archivo resultante aparece en `~/PDF/`.
+5. Reflexión: explicá con tus propias palabras por qué CUPS necesitaba durante años un driver PPD específico por fabricante, y qué resuelve IPP Everywhere al respecto — mismo patrón de "protocolo estándar reemplazando drivers propietarios" que ya viste en otras partes del curso.
+
+---
+
+## 7. ERROR INTENCIONAL / DIAGNÓSTICO
+
+```bash
+lp -d "impresora-que-no-existe" /tmp/prueba-modulo20.txt
+```
+
+**Diagnóstico esperado:** un error indicando que esa impresora de destino no existe (`lp: Error - The printer or class does not exist.`) — CUPS valida el nombre de destino contra las colas configuradas antes de aceptar el trabajo, mismo patrón de validación estricta que el curso viene repitiendo desde `pw-link` (Módulo 15).
+
+---
+
+## Checklist de cierre del módulo (y de la Fase 06 completa)
+
+- [ ] Entiendo a CUPS como demonio central de impresión, con la misma arquitectura de abstracción que ya viste en otros servicios de sistema.
+- [ ] Entiendo la diferencia entre drivers PPD tradicionales e IPP Everywhere.
+- [ ] Instalé CUPS y confirmé la interfaz web en el puerto 631.
+- [ ] Agregué y usé la impresora virtual PDF para probar el flujo completo sin hardware real.
+- [ ] Imprimí un archivo real desde la terminal con `lp` y confirmé el resultado.
+- [ ] Provoqué y diagnostiqué el error de imprimir a un destino inexistente.
 
 ---
 
 ## Evidencias
 
 _(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+
+---
+
+## Cierre de Fase 06 — Desktop Networking
+
+Con este módulo termina la Fase 06: NetworkManager orquestando la conectividad de escritorio (Módulo 17), Wi-Fi y Bluetooth documentados honestamente pese a las limitaciones de hardware de la VM (Módulos 18-19), y CUPS cerrando el capítulo con un caso donde la virtualización **no** fue una limitación — la impresora PDF permitió probar el flujo completo de punta a punta.
+
+---
+
+**Próximo módulo:** 21 — Btrfs Desktop Architecture (inicio de la Fase 07 — Btrfs Desktop).
