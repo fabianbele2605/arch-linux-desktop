@@ -115,16 +115,54 @@ rm /tmp/btrfs-practica.img
 
 ## Checklist de cierre del módulo
 
-- [ ] Entiendo por qué el layout `@`/`@home` existe específicamente para proteger datos de usuario durante rollbacks de sistema.
-- [ ] Monté subvolúmenes individuales con `subvol=`, confirmando aislamiento lógico sobre almacenamiento compartido.
-- [ ] Entiendo qué es el subvolumen por defecto y cuándo importa (fstab explícito vs. otras distros).
-- [ ] Provoqué y diagnostiqué el error de montar un subvolumen inexistente.
+- [x] Entiendo por qué el layout `@`/`@home` existe específicamente para proteger datos de usuario durante rollbacks de sistema.
+- [x] Monté subvolúmenes individuales con `subvol=`, confirmando aislamiento lógico sobre almacenamiento compartido.
+- [x] Entiendo qué es el subvolumen por defecto y cuándo importa (fstab explícito vs. otras distros).
+- [x] Provoqué y diagnostiqué el error de montar un subvolumen inexistente.
 
 ---
 
 ## Evidencias
 
-_(pendiente — se agregan capturas reales a medida que se completa el módulo)_
+**01 — `@` y `@home` creados**
+`ID 256` para `@`, `ID 257` para `@home` — secuenciales, confirmando la numeración que ya se había visto en el Módulo 21. Un typo de sudo en el camino ("Sorry, try again") sin consecuencia.
+
+![subvolumenes arroba arroba home creados](evidencias/01-subvolumenes-arroba-arroba-home-creados.png)
+
+**02 — Cada subvolumen montado por separado, archivos aislados**
+`mount -o subvol=@` y `subvol=@home` sobre la misma imagen; `sistema.txt` y `usuario.txt` escritos correctamente, cada uno visible solo desde su propio punto de montaje.
+
+![subvol montados por separado archivos escritos](evidencias/02-subvol-montados-por-separado-archivos-escritos.png)
+
+**03 — `findmnt` confirma el aislamiento sobre el mismo dispositivo físico**
+Ambos puntos de montaje (`/mnt/raiz-simulada`, `/mnt/home-simulada`) apuntan a `/dev/loop0`, con `subvolid=256`/`257` y `subvol=/@`/`/@home` respectivamente — mismo device, subvolúmenes lógicamente independientes.
+
+![findmnt confirma aislamiento mismo dispositivo](evidencias/03-findmnt-confirma-aislamiento-mismo-dispositivo.png)
+
+**04 — Subvolumen por defecto: antes (`ID 5`, FS_TREE) y después (`ID 256`, `@`)**
+`get-default` inicial devuelve el subvolumen raíz técnico reservado; tras `set-default 256`, `@` pasa a ser el default.
+
+![subvolumen por defecto antes despues](evidencias/04-subvolumen-por-defecto-antes-despues.png)
+
+**05 — Primer intento del error intencional: `already mounted`**
+El punto de montaje reutilizado ya tenía algo montado — error distinto al esperado, diagnosticado en el momento y corregido usando un punto de montaje nuevo.
+
+![error already mounted primer intento](evidencias/05-error-already-mounted-primer-intento.png)
+
+**06 — Typo real: `/mnt/` en vez de `/tmp/` en la ruta de la imagen**
+`special device /mnt/btrfs-practica.img does not exist` — la imagen vive en `/tmp/`, no en `/mnt/`. Confirmado y corregido con `ls -la /tmp/btrfs-practica.img`.
+
+![typo ruta mnt en vez de tmp](evidencias/06-typo-ruta-mnt-en-vez-de-tmp.png)
+
+**07 — Error intencional confirmado, con la ruta correcta**
+`mount: fsconfig() failed: No such file or directory` — el subvolumen inventado no existe, validado antes de montar. Redacción distinta a la anticipada en la teoría (API moderna `fsconfig()` del kernel), mismo resultado de fondo.
+
+![error intencional fsconfig confirmado](evidencias/07-error-intencional-fsconfig-confirmado.png)
+
+**08 — Limpieza final**
+`umount` de ambos subvolúmenes y borrado de la imagen de prueba, sin dejar rastro en el sistema real.
+
+![limpieza final umount y borrado](evidencias/08-limpieza-final-umount-y-borrado.png)
 
 ---
 
